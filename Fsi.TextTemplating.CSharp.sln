@@ -1,0 +1,33 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{D5666348-562E-4DB8-955E-9A4341C4124F}"
+	ProjectSection(SolutionItems) = preProject
+		global.json = global.json
+	EndProjectSection
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Fsi.TextTemplating.CSharp", "Fsi.TextTemplating.CSharp\Fsi.TextTemplating.CSharp.xproj", "{8F8FFA0F-72AB-4332-854A-056017CF4BAD}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Fsi.TextTemplating.CSharp.Tests", "Fsi.TextTemplating.CSharp.Tests\Fsi.TextTemplating.CSharp.Tests.xproj", "{36B464F9-C1DA-4CEB-8CE1-246AC36367AF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8F8FFA0F-72AB-4332-854A-056017CF4BAD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8F8FFA0F-72AB-4332-854A-056017CF4BAD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8F8FFA0F-72AB-4332-854A-056017CF4BAD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8F8FFA0F-72AB-4332-854A-056017CF4BAD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{36B464F9-C1DA-4CEB-8CE1-246AC36367AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{36B464F9-C1DA-4CEB-8CE1-246AC36367AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{36B464F9-C1DA-4CEB-8CE1-246AC36367AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{36B464F9-C1DA-4CEB-8CE1-246AC36367AF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
