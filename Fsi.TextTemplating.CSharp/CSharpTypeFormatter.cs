@@ -8,8 +8,15 @@ namespace Fsi.TextTemplating
 {
     public partial class CSharpTypeFormatter
     {
-        private FormatterContext Context { get; set; }
+        private FormatterContext Context { get; set; } = new RootFormatterContext();
 
+        public void AppendCRefTo(Type type, StringBuilder typeName)
+        {
+            if (type == null) throw new ArgumentNullException(nameof(type));
+            if (typeName == null) throw new ArgumentNullException(nameof(typeName));
+
+            Context.GetTypeName(type).AppendCRefTo(typeName, Context);
+        }
         public void AppendFullNameTo(Type type, StringBuilder typeName)
         {
             if (type == null) throw new ArgumentNullException(nameof(type));
@@ -32,12 +39,12 @@ namespace Fsi.TextTemplating
 
             return new NamespaceDeclaration(this);
         }
-
-        private void EndNamespace()
+        public string CRefOf(Type type)
         {
-            Context = Context.EndNamespace();
-        }
+            if (type == null) throw new ArgumentNullException(nameof(type));
 
+            return Context.GetTypeName(type).GetCRef(Context);
+        }
         public string Default(Type type)
         {
             var builder = new StringBuilder();
@@ -64,6 +71,11 @@ namespace Fsi.TextTemplating
             if (type == null) throw new ArgumentNullException(nameof(type));
 
             return Context.GetTypeName(type).GetName(Context);
+        }
+
+        private void EndNamespace()
+        {
+            Context = Context.EndNamespace();
         }
 
     }

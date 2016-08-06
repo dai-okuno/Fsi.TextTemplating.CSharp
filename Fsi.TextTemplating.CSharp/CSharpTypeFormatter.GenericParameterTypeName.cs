@@ -17,7 +17,7 @@ namespace Fsi.TextTemplating
             }
             public override Type Type { get; }
 
-            public override void AppendCommentNameTo(StringBuilder builder, FormatterContext context)
+            public override void AppendCRefTo(StringBuilder builder, FormatterContext context)
             {
                 builder.Append(Type.Name);
             }
@@ -31,7 +31,7 @@ namespace Fsi.TextTemplating
             {
                 builder.Append(Type.Name);
             }
-            public override string GetCommentName(FormatterContext context)
+            public override string GetCRef(FormatterContext context)
                 => Type.Name;
 
             public override string GetFullName(FormatterContext context)

@@ -19,9 +19,9 @@ namespace Fsi.TextTemplating
 
             private TypeName ElementTypeName { get; }
 
-            protected override void AppendCommentNameToCore(StringBuilder builder, FormatterContext context)
+            protected override void AppendCRefToCore(StringBuilder builder, FormatterContext context)
             {
-                ElementTypeName.AppendCommentNameTo(builder, context);
+                ElementTypeName.AppendCRefTo(builder, context);
                 builder.Append('*');
             }
 

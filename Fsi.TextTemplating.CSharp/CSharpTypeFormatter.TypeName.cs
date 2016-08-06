@@ -16,7 +16,7 @@ namespace Fsi.TextTemplating
             /// <summary></summary>
             /// <param name="builder"></param>
             /// <param name="context"></param>
-            public abstract void AppendCommentNameTo(StringBuilder builder, FormatterContext context);
+            public abstract void AppendCRefTo(StringBuilder builder, FormatterContext context);
 
             /// <summary></summary>
             /// <param name="builder"></param>
@@ -38,7 +38,7 @@ namespace Fsi.TextTemplating
             public override int GetHashCode()
                 => Type.GetHashCode();
 
-            public abstract string GetCommentName(FormatterContext context);
+            public abstract string GetCRef(FormatterContext context);
             public abstract string GetFullName(FormatterContext context);
 
             public abstract string GetName(FormatterContext context);

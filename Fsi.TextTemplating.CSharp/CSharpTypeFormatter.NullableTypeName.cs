@@ -16,10 +16,10 @@ namespace Fsi.TextTemplating
                 UnderlyingTypeName = underlyingTypeName;
             }
             private TypeName UnderlyingTypeName { get; }
-            protected override void AppendCommentNameToCore(StringBuilder builder, FormatterContext context)
+            protected override void AppendCRefToCore(StringBuilder builder, FormatterContext context)
             {
                 builder.Append("global::System.Nullable{");
-                UnderlyingTypeName.AppendCommentNameTo(builder, context);
+                UnderlyingTypeName.AppendCRefTo(builder, context);
                 builder.Append('}');
             }
             protected override void AppendFullNameToCore(StringBuilder builder, FormatterContext context)

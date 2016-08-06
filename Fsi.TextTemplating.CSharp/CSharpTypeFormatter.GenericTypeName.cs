@@ -33,17 +33,17 @@ namespace Fsi.TextTemplating
             private TypeName[] GenericTypeArgumentNames { get; }
 
 
-            protected override void AppendCommentNameToCore(StringBuilder builder, FormatterContext context)
+            protected override void AppendCRefToCore(StringBuilder builder, FormatterContext context)
             {
                 if (0 < Simplify.AppendCommentNameTo(builder, context))
                 { builder.Append('.'); }
                 builder.Append(CoreName);
                 builder.Append('{');
-                GenericTypeArgumentNames[0].AppendCommentNameTo(builder, context);
+                GenericTypeArgumentNames[0].AppendCRefTo(builder, context);
                 for (int i = 1; i < GenericTypeArgumentNames.Length; i++)
                 {
                     builder.Append(", ");
-                    GenericTypeArgumentNames[i].AppendCommentNameTo(builder, context);
+                    GenericTypeArgumentNames[i].AppendCRefTo(builder, context);
                 }
                 builder.Append('}');
             }

@@ -21,7 +21,7 @@ namespace Fsi.TextTemplating
             public int AppendCommentNameTo(StringBuilder builder, FormatterContext context)
             {
                 var start = builder.Length;
-                TypeName.AppendCommentNameTo(builder, context);
+                TypeName.AppendCRefTo(builder, context);
                 return builder.Length - start;
             }
 

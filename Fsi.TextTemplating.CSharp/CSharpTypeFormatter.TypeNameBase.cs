@@ -20,21 +20,21 @@ namespace Fsi.TextTemplating
 
             private string FullName { get; set; }
 
-            private ContextName CommentName { get; set; }
+            private ContextName CRef { get; set; }
             private ContextName Name { get; set; }
 
 
-            public sealed override void AppendCommentNameTo(StringBuilder builder, FormatterContext context)
+            public sealed override void AppendCRefTo(StringBuilder builder, FormatterContext context)
             {
-                if (CommentName == null || CommentName.Context != context)
+                if (CRef == null || CRef.Context != context)
                 {
                     var start = builder.Length;
-                    AppendCommentNameToCore(builder, context);
-                    CommentName = new ContextName(context, builder.ToString(start, builder.Length - start));
+                    AppendCRefToCore(builder, context);
+                    CRef = new ContextName(context, builder.ToString(start, builder.Length - start));
                 }
                 else
                 {
-                    builder.Append(CommentName.Name);
+                    builder.Append(CRef.Name);
                 }
             }
 
@@ -65,19 +65,19 @@ namespace Fsi.TextTemplating
                     builder.Append(Name.Name);
                 }
             }
-            protected abstract void AppendCommentNameToCore(StringBuilder builder, FormatterContext context);
+            protected abstract void AppendCRefToCore(StringBuilder builder, FormatterContext context);
             protected abstract void AppendFullNameToCore(StringBuilder builder, FormatterContext context);
             protected abstract void AppendNameToCore(StringBuilder builder, FormatterContext context);
 
-            public sealed override string GetCommentName(FormatterContext context)
+            public sealed override string GetCRef(FormatterContext context)
             {
-                if (CommentName == null || CommentName.Context != context)
+                if (CRef == null || CRef.Context != context)
                 {
                     var builder = new StringBuilder(Type.FullName.Length);
-                    AppendCommentNameToCore(builder, context);
-                    CommentName = new ContextName(context, builder.ToString());
+                    AppendCRefToCore(builder, context);
+                    CRef = new ContextName(context, builder.ToString());
                 }
-                return CommentName.Name;
+                return CRef.Name;
             }
             public sealed override string GetFullName(FormatterContext context)
             {
@@ -94,7 +94,7 @@ namespace Fsi.TextTemplating
             {
                 if (Name == null || Name.Context != context)
                 {
-                    var builder = new StringBuilder(Type.FullName);
+                    var builder = new StringBuilder(Type.FullName.Length);
                     AppendNameToCore(builder, context);
                     Name = new ContextName(context, builder.ToString());
                 }

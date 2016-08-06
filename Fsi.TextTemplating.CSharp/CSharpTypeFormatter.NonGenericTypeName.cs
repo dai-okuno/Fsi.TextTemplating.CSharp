@@ -31,7 +31,7 @@ namespace Fsi.TextTemplating
             private ISimplify Simplify { get; }
 
 
-            protected override void AppendCommentNameToCore(StringBuilder builder, FormatterContext context)
+            protected override void AppendCRefToCore(StringBuilder builder, FormatterContext context)
             {
                 if (0 < Simplify.AppendCommentNameTo(builder, context))
                 { builder.Append('.'); }

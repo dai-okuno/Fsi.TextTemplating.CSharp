@@ -43,6 +43,7 @@ namespace Fsi.TextTemplating
             {
                 PrimitiveTypeName.@string,
                 PrimitiveTypeName.@void,
+                PrimitiveTypeName.@bool,
                 PrimitiveTypeName.@byte,
                 PrimitiveTypeName.@short,
                 PrimitiveTypeName.@int,

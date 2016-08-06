@@ -35,7 +35,7 @@ namespace Fsi.TextTemplating
 
             public string PrimitiveName { get; }
 
-            protected override Type Type { get; }
+            public override Type Type { get; }
 
             public override void AppendNameTo(StringBuilder builder, FormatterContext context)
             {
@@ -43,7 +43,7 @@ namespace Fsi.TextTemplating
             }
 
 
-            public override void AppendCommentNameTo(StringBuilder builder, FormatterContext context)
+            public override void AppendCRefTo(StringBuilder builder, FormatterContext context)
             {
                 builder.Append(PrimitiveName);
             }
@@ -52,10 +52,8 @@ namespace Fsi.TextTemplating
             {
                 builder.Append(PrimitiveName);
             }
-            public override string GetCommentName(FormatterContext context)
-            {
-                throw new NotImplementedException();
-            }
+            public override string GetCRef(FormatterContext context)
+                => PrimitiveName;
             public override string GetFullName(FormatterContext context)
                 => PrimitiveName;
             public override string GetName(FormatterContext context)

@@ -14,7 +14,7 @@ namespace Fsi.TextTemplating
 
         protected KeyedCollection(int capacity, IEqualityComparer<TKey> comparer)
         {
-            _Table = new Node[GetSize(capacity)];
+            _Table = new Node[GetTableSize(capacity)];
             _Mask = _Table.Length - 1;
             Comparer = comparer;
         }
@@ -42,55 +42,54 @@ namespace Fsi.TextTemplating
         public void Add(TItem item)
         {
             var t = GetKey(item).GetHashCode() & _Mask;
-            Node node;
-            if ((node = _Table[t]) == null)
+            var node = _Table[t];
+            if (node == null)
             {
                 _Table[t] = new Node() { _Item = item };
                 return;
             }
-            do
+            while (node._Next != null)
             {
-
-            } while ((node = node._Next) != null);
-
+                node = node._Next;
+            }
+            node._Next = new Node() { _Item = item };
         }
 
         public bool Contains(TItem item)
         {
             var key = GetKey(item);
             var t = key.GetHashCode() & _Mask;
-            Node node;
-            if ((node = _Table[t]) == null)
-            {
-                return false;
-            }
-            do
+            var node = _Table[t];
+            while (node != null)
             {
                 if (Comparer.Equals(key, GetKey(node._Item)))
                 {
                     return true;
                 }
-            } while ((node = node._Next) != null);
+                else
+                {
+                    node = node._Next;
+                }
+            }
             return false;
         }
 
         public bool TryGetValue(TKey key, out TItem item)
         {
             var t = key.GetHashCode() & _Mask;
-            Node node;
-            if ((node = _Table[t]) == null)
-            {
-                item = default(TItem);
-                return false;
-            }
-            do
+            var node = _Table[t];
+            while (node != null)
             {
                 if (Comparer.Equals(key, GetKey(node._Item)))
                 {
                     item = node._Item;
                     return true;
                 }
-            } while ((node = node._Next) != null);
+                else
+                {
+                    node = node._Next;
+                }
+            }
             item = default(TItem);
             return false;
         }
@@ -112,7 +111,7 @@ namespace Fsi.TextTemplating
         protected abstract TKey GetKey(TItem item);
 
 
-        private int GetSize(int capacity)
+        private int GetTableSize(int capacity)
         {
             for (int i = _TableSizes.Length - 1; i >= 0; i--)
             {
@@ -127,6 +126,10 @@ namespace Fsi.TextTemplating
         {
             public TItem _Item;
             public Node _Next;
+            public override string ToString()
+            {
+                return _Item?.ToString() ?? string.Empty;
+            }
         }
 
     }
