@@ -36,12 +36,10 @@ namespace Fsi.TextTemplating
         private IEqualityComparer<TKey> Comparer { get; }
 
         private Node[] _Table;
-        public int Count
-            => _Count;
 
         public void Add(TItem item)
         {
-            var t = GetKey(item).GetHashCode() & _Mask;
+            var t = Comparer.GetHashCode(GetKey(item)) & _Mask;
             var node = _Table[t];
             if (node == null)
             {
@@ -58,7 +56,7 @@ namespace Fsi.TextTemplating
         public bool Contains(TItem item)
         {
             var key = GetKey(item);
-            var t = key.GetHashCode() & _Mask;
+            var t = Comparer.GetHashCode(key) & _Mask;
             var node = _Table[t];
             while (node != null)
             {
@@ -76,7 +74,7 @@ namespace Fsi.TextTemplating
 
         public bool TryGetValue(TKey key, out TItem item)
         {
-            var t = key.GetHashCode() & _Mask;
+            var t = Comparer.GetHashCode(key) & _Mask;
             var node = _Table[t];
             while (node != null)
             {

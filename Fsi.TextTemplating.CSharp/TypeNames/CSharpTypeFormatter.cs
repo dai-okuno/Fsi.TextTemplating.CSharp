@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Fsi.TextTemplating
+namespace Fsi.TextTemplating.TypeNames
 {
     public partial class CSharpTypeFormatter
     {
@@ -73,7 +73,7 @@ namespace Fsi.TextTemplating
             return Context.GetTypeName(type).GetName(Context);
         }
 
-        private void EndNamespace()
+        internal void EndNamespace()
         {
             Context = Context.EndNamespace();
         }
