@@ -6,34 +6,41 @@ using System.Threading.Tasks;
 
 namespace Fsi.TextTemplating.TypeNames
 {
-internal class PointerTypeName
-        : TypeNameBase
+    internal class PointerTypeName
+        : CachedTypeName
     {
-        public PointerTypeName(Type type, TypeName elementTypeName)
+        public PointerTypeName(Type type, ITypeName elementTypeName)
             : base(type)
         {
             ElementTypeName = elementTypeName;
         }
 
-        private TypeName ElementTypeName { get; }
-
-        protected override void AppendCRefToCore(StringBuilder builder, FormatterContext context)
+        private ITypeName ElementTypeName { get; }
+        protected override void AppendAliasNameToCore(StringBuilder typeName, IFormatterContext context)
         {
-            ElementTypeName.AppendCRefTo(builder, context);
-            builder.Append('*');
+            AppendNameTo(Helper.AliasName, typeName, context);
         }
-
-        protected override void AppendFullNameToCore(StringBuilder builder, FormatterContext context)
+        protected override void AppendCRefNameToCore(StringBuilder typeName, IFormatterContext context)
         {
-            ElementTypeName.AppendFullNameTo(builder, context);
-            builder.Append('*');
+            AppendNameTo(Helper.CRefName, typeName, context);
         }
-
-        protected override void AppendNameToCore(StringBuilder builder, FormatterContext formatter)
+        protected override void AppendFullNameToCore(StringBuilder typeName, IFormatterContext context)
         {
-            ElementTypeName.AppendNameTo(builder, formatter);
-            builder.Append('*');
+            AppendNameTo(Helper.FullName, typeName, context);
         }
-
+        protected override void AppendNameToCore(StringBuilder typeName, IFormatterContext context)
+        {
+            AppendNameTo(Helper.Name, typeName, context);
+        }
+        private void AppendNameTo(Helper helper, StringBuilder typeName, IFormatterContext context)
+        {
+            helper.AppendTypeNameTo(ElementTypeName, typeName, context);
+            typeName.Append('*');
+        }
+        protected override void AppendNameToCore(Helper helper, StringBuilder typeName, IFormatterContext context)
+        {
+            helper.AppendTypeNameTo(ElementTypeName, typeName, context);
+            typeName.Append('*');
+        }
     }
 }

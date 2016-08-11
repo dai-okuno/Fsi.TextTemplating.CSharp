@@ -5,13 +5,12 @@ using System.Threading.Tasks;
 
 namespace Fsi.TextTemplating.TypeNames
 {
-
-    internal class TypeNameCollection
-        : IEnumerable<ITypeName>
+    internal class NamespaceNameCollection
+        : IEnumerable<INamespaceName>
     {
-        public TypeNameCollection()
+        public NamespaceNameCollection()
         {
-            _Table = new Node[GetTableSize(256)];
+            _Table = new Node[GetTableSize(DefaultTableSize)];
             _Mask = _Table.Length - 1;
         }
 
@@ -26,14 +25,15 @@ namespace Fsi.TextTemplating.TypeNames
             0x01000000, 0x02000000, 0x04000000, 0x08000000,
             0x10000000, 0x20000000, 0x40000000, };
 
+        public int Count { get; private set; }
+
         private readonly int _Mask;
 
         private Node[] _Table;
 
-        public int Count { get; private set; }
-        public void Add(ITypeName item)
+        public void Add(INamespaceName item)
         {
-            var t = item.Type.GetHashCode() & _Mask;
+            var t = item.FullName.GetHashCode() & _Mask;
             var node = _Table[t];
             if (node == null)
             {
@@ -45,16 +45,16 @@ namespace Fsi.TextTemplating.TypeNames
                 node = node._Next;
             }
             node._Next = new Node() { _Item = item };
-            Count++;
         }
 
-        public bool Contains(ITypeName item)
+        public bool Contains(INamespaceName item)
         {
-            var t = item.Type.GetHashCode() & _Mask;
+            var key = item.FullName;
+            var t = key.GetHashCode() & _Mask;
             var node = _Table[t];
             while (node != null)
             {
-                if (item == node._Item)
+                if (key == node._Item.FullName)
                 {
                     return true;
                 }
@@ -66,13 +66,13 @@ namespace Fsi.TextTemplating.TypeNames
             return false;
         }
 
-        public bool TryGetValue(Type key, out ITypeName item)
+        public bool TryGetValue(string key, out INamespaceName item)
         {
             var t = key.GetHashCode() & _Mask;
             var node = _Table[t];
             while (node != null)
             {
-                if (key == node._Item.Type)
+                if (key == node._Item.FullName)
                 {
                     item = node._Item;
                     return true;
@@ -82,11 +82,11 @@ namespace Fsi.TextTemplating.TypeNames
                     node = node._Next;
                 }
             }
-            item = default(ITypeName);
+            item = default(INamespaceName);
             return false;
         }
 
-        public IEnumerator<ITypeName> GetEnumerator()
+        public IEnumerator<INamespaceName> GetEnumerator()
         {
             for (int t = 0; t < _Table.Length; t++)
             {
@@ -102,24 +102,24 @@ namespace Fsi.TextTemplating.TypeNames
 
         private int GetTableSize(int capacity)
         {
-            for (int i = _TableSizes.Length - 1; i >= 0; i--)
+            for (int i = 1; i < _TableSizes.Length; i++)
             {
-                if (_TableSizes[i] <= capacity) return _TableSizes[i];
+                if (capacity < _TableSizes[i]) return _TableSizes[i - 1];
             }
             return DefaultTableSize;
         }
-
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
             => GetEnumerator();
 
         private class Node
         {
-            public ITypeName _Item;
+            public INamespaceName _Item;
             public Node _Next;
             public override string ToString()
             {
                 return _Item?.ToString() ?? string.Empty;
             }
         }
+
     }
 }

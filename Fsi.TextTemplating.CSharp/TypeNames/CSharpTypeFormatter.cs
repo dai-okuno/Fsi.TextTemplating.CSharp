@@ -8,14 +8,14 @@ namespace Fsi.TextTemplating.TypeNames
 {
     public partial class CSharpTypeFormatter
     {
-        private FormatterContext Context { get; set; } = new RootFormatterContext();
+        private IFormatterContext Context { get; set; } = new SourceFileFormatterContext();
 
         public void AppendCRefTo(Type type, StringBuilder typeName)
         {
             if (type == null) throw new ArgumentNullException(nameof(type));
             if (typeName == null) throw new ArgumentNullException(nameof(typeName));
 
-            Context.GetTypeName(type).AppendCRefTo(typeName, Context);
+            Context.GetTypeName(type).AppendCRefNameTo(typeName, Context);
         }
         public void AppendFullNameTo(Type type, StringBuilder typeName)
         {
@@ -35,15 +35,20 @@ namespace Fsi.TextTemplating.TypeNames
 
         public IDisposable BeginNamespace(string namespaceName)
         {
-            Context = Context.BeginNamespace(namespaceName);
-
+            var context = new NamespaceDeclarationFormatterContext(Context, namespaceName);
+            Context = context;
+            var declared = Context.NamespaceName;
+            do
+            {
+                declared.IsDeclared = true;
+            } while ((declared = declared.Parent) != Context.Parent.NamespaceName);
             return new NamespaceDeclaration(this);
         }
         public string CRefOf(Type type)
         {
             if (type == null) throw new ArgumentNullException(nameof(type));
 
-            return Context.GetTypeName(type).GetCRef(Context);
+            return Context.GetTypeName(type).GetCRefName(Context);
         }
         public string Default(Type type)
         {
@@ -63,7 +68,7 @@ namespace Fsi.TextTemplating.TypeNames
 
         public void Import(string namespaceName)
         {
-            Context.Import(namespaceName);
+            Context.Import(namespaceName).BeginImport();
         }
 
         public string NameOf(Type type)
@@ -75,8 +80,35 @@ namespace Fsi.TextTemplating.TypeNames
 
         internal void EndNamespace()
         {
-            Context = Context.EndNamespace();
+            foreach (var imported in Context.ImportedNamespaceNames)
+            {
+                imported.EndImport();
+            }
+            var declared = Context.NamespaceName;
+            do
+            {
+                declared.IsDeclared = false;
+            } while ((declared = declared.Parent) != Context.Parent.NamespaceName);
+            Context = Context.Parent;
         }
+        private sealed class NamespaceDeclaration
+            : IDisposable
+        {
+            public NamespaceDeclaration(CSharpTypeFormatter formatter)
+            {
+                Formatter = formatter;
+            }
+            private CSharpTypeFormatter Formatter { get; }
 
+            private bool IsDisposed { get; set; }
+
+            public void Dispose()
+            {
+                if (IsDisposed) return;
+                IsDisposed = true;
+                Formatter.EndNamespace();
+                GC.SuppressFinalize(this);
+            }
+        }
     }
 }

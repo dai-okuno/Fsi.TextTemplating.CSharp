@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Fsi.TextTemplating.TypeNames
 {
-internal class PrimitiveTypeName
+    internal class PrimitiveTypeName
         : TypeName
     {
         private PrimitiveTypeName(Type type, string primitiveName)
@@ -30,31 +30,40 @@ internal class PrimitiveTypeName
         public static PrimitiveTypeName @string { get; } = new PrimitiveTypeName(typeof(string), nameof(@string));
         public static PrimitiveTypeName @object { get; } = new PrimitiveTypeName(typeof(object), nameof(@object));
         public static PrimitiveTypeName @void { get; } = new PrimitiveTypeName(typeof(void), nameof(@void));
-
         public string PrimitiveName { get; }
 
         public override Type Type { get; }
 
-        public override void AppendNameTo(StringBuilder builder, FormatterContext context)
+        public override void AppendAliasNameTo(StringBuilder typeName, IFormatterContext context)
         {
-            builder.Append(PrimitiveName);
+            typeName.Append(Type.FullName);
         }
 
-
-        public override void AppendCRefTo(StringBuilder builder, FormatterContext context)
+        public override void AppendCRefNameTo(StringBuilder typeName, IFormatterContext context)
         {
-            builder.Append(PrimitiveName);
+            typeName.Append(PrimitiveName);
         }
 
-        public override void AppendFullNameTo(StringBuilder builder, FormatterContext context)
+        public override void AppendFullNameTo(StringBuilder typeName, IFormatterContext context)
         {
-            builder.Append(PrimitiveName);
+            typeName.Append(PrimitiveName);
         }
-        public override string GetCRef(FormatterContext context)
+
+        public override void AppendNameTo(StringBuilder typeName, IFormatterContext context)
+        {
+            typeName.Append(PrimitiveName);
+        }
+
+        public override string GetAliasName(IFormatterContext context)
+            => Type.FullName;
+
+        public override string GetCRefName(IFormatterContext context)
             => PrimitiveName;
-        public override string GetFullName(FormatterContext context)
+
+        public override string GetFullName(IFormatterContext context)
             => PrimitiveName;
-        public override string GetName(FormatterContext context)
+
+        public override string GetName(IFormatterContext context)
             => PrimitiveName;
     }
 

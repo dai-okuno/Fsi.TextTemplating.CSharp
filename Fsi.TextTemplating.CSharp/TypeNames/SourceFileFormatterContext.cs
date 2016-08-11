@@ -7,10 +7,32 @@ using System.Reflection;
 namespace Fsi.TextTemplating.TypeNames
 {
 
-    internal class RootFormatterContext
-            : FormatterContext
+    internal class SourceFileFormatterContext
+        : IFormatterContext
     {
+        public SourceFileFormatterContext()
+        {
+            ImportedNamespaceNames = new HashSet<INamespaceName>();
+            NamespaceName = new GlobalNamespaceName();
+            NamespaceNames = new NamespaceNameCollection();
+            NamespaceNames.Add(GetNamespaceName("System"));
+            NamespaceNames.Add(GetNamespaceName("System.Collections.Generic"));
+            NamespaceNames.Add(GetNamespaceName("System.Linq"));
+            NamespaceNames.Add(GetNamespaceName("System.Text"));
+            NamespaceNames.Add(GetNamespaceName("System.Threading.Tasks"));
+        }
+        private HashSet<INamespaceName> ImportedNamespaceNames { get; }
+        IEnumerable<INamespaceName> IFormatterContext.ImportedNamespaceNames
+            => ImportedNamespaceNames;
 
+        public GlobalNamespaceName NamespaceName { get; }
+        INamespaceName IFormatterContext.NamespaceName
+            => NamespaceName;
+        public SourceFileFormatterContext Root
+            => this;
+        IFormatterContext IFormatterContext.Parent
+            => null;
+        private NamespaceNameCollection NamespaceNames { get; }
         private TypeNameCollection TypeNames { get; } = new TypeNameCollection()
             {
                 PrimitiveTypeName.@string,
@@ -30,13 +52,29 @@ namespace Fsi.TextTemplating.TypeNames
                 PrimitiveTypeName.@char,
                 PrimitiveTypeName.@object,
             };
-
-        public override NamespaceName GetNamespaceName(string namespaceName)
-            => new NamespaceName(namespaceName);
-
-        public override TypeName GetTypeName(Type type)
+        public INamespaceName GetNamespaceName(string namespaceName)
         {
-            TypeName value;
+            INamespaceName value;
+            if (NamespaceNames.TryGetValue(namespaceName, out value))
+            {
+                return value;
+            }
+            var i = namespaceName.LastIndexOf('.');
+            if (i < 0)
+            {
+                value = new NamespaceName(NamespaceName, namespaceName);
+            }
+            else
+            {
+                var parent = GetNamespaceName(namespaceName.Remove(i));
+                value = new NamespaceName(parent, namespaceName);
+            }
+            NamespaceNames.Add(value);
+            return value;
+        }
+        public ITypeName GetTypeName(Type type)
+        {
+            ITypeName value;
             if (!TypeNames.TryGetValue(type, out value))
             {
                 if (type.HasElementType)
@@ -101,7 +139,7 @@ namespace Fsi.TextTemplating.TypeNames
                     {
                         value = new ParameterizedTypeName(type, GetNamespaceName(type.Namespace), GetTypeNames(args, 0));
                     }
-                    else 
+                    else
                     {
                         value = new NonParameterizedTypeName(type, GetNamespaceName(type.Namespace));
                     }
@@ -110,10 +148,15 @@ namespace Fsi.TextTemplating.TypeNames
             }
             return value;
         }
-
-        private TypeName[] GetTypeNames(Type[] types, int offset)
+        public INamespaceName Import(string namespaceName)
         {
-            var result = new TypeName[types.Length];
+            var value = GetNamespaceName(namespaceName);
+            ImportedNamespaceNames.Add(value);
+            return value;
+        }
+        private ITypeName[] GetTypeNames(Type[] types, int offset)
+        {
+            var result = new ITypeName[types.Length];
             for (int i = offset; i < types.Length; i++)
             {
                 result[i] = GetTypeName(types[i]);

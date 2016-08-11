@@ -4,20 +4,20 @@ using System.Text;
 namespace Fsi.TextTemplating.TypeNames
 {
     internal class ArrayTypeName
-            : TypeNameBase
+        : CachedTypeName
     {
-        private ArrayTypeName(Type type, TypeName elementTypeName, string ranks)
+        private ArrayTypeName(Type type, ITypeName elementTypeName, string ranks)
             : base(type)
         {
             ElementTypeName = elementTypeName;
             Ranks = ranks;
         }
 
-        private TypeName ElementTypeName { get; }
+        private ITypeName ElementTypeName { get; }
 
         private string Ranks { get; }
 
-        public static ArrayTypeName Create(Type type, FormatterContext context)
+        public static ArrayTypeName Create(Type type, IFormatterContext context)
         {
             var t = type;
             var ranks = string.Empty;
@@ -43,24 +43,11 @@ namespace Fsi.TextTemplating.TypeNames
             return new ArrayTypeName(type, context.GetTypeName(t), ranks);
         }
 
-        protected override void AppendCRefToCore(StringBuilder builder, FormatterContext context)
+        protected override void AppendNameToCore(Helper helper, StringBuilder typeName, IFormatterContext context)
         {
-            ElementTypeName.AppendCRefTo(builder, context);
-            builder.Append(Ranks);
+            helper.AppendTypeNameTo(ElementTypeName, typeName, context);
+            typeName.Append(Ranks);
         }
-
-        protected override void AppendFullNameToCore(StringBuilder builder, FormatterContext context)
-        {
-            ElementTypeName.AppendFullNameTo(builder, context);
-            builder.Append(Ranks);
-        }
-
-        protected override void AppendNameToCore(StringBuilder builder, FormatterContext formatter)
-        {
-            ElementTypeName.AppendNameTo(builder, formatter);
-            builder.Append(Ranks);
-        }
-
     }
 }
 

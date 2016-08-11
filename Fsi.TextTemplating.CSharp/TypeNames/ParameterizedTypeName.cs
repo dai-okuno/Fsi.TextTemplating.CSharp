@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 namespace Fsi.TextTemplating.TypeNames
 {
     internal class ParameterizedTypeName
-            : TypeNameBase
+            : CachedTypeName
     {
-        public ParameterizedTypeName(Type type, NamespaceName namespaceName, TypeName[] argNames)
+        public ParameterizedTypeName(Type type, INamespaceName namespaceName, ITypeName[] argNames)
             : base(type)
         {
             Parent = namespaceName;
@@ -17,7 +17,7 @@ namespace Fsi.TextTemplating.TypeNames
             GenericTypeArgumentNames = argNames;
         }
 
-        public ParameterizedTypeName(Type type, TypeName declaringTypeName, TypeName[] argNames)
+        public ParameterizedTypeName(Type type, ITypeName declaringTypeName, ITypeName[] argNames)
             : base(type)
         {
             Parent = declaringTypeName;
@@ -28,56 +28,28 @@ namespace Fsi.TextTemplating.TypeNames
         private ITypeNameContainer Parent { get; }
 
         private string CoreName { get; }
-
-        private TypeName[] GenericTypeArgumentNames { get; }
-
+        private ITypeName[] GenericTypeArgumentNames { get; }
         private string GetCoreName(Type type)
             => type.Name.Remove(type.Name.IndexOf('`'));
 
-
-        protected override void AppendCRefToCore(StringBuilder builder, FormatterContext context)
+        protected override void AppendNameToCore(Helper helper, StringBuilder typeName, IFormatterContext context)
         {
-            if (0 < Parent.AppendCommentNameTo(builder, context))
-            { builder.Append('.'); }
-            builder.Append(CoreName);
-            builder.Append('{');
-            GenericTypeArgumentNames[0].AppendCRefTo(builder, context);
-            for (int i = 1; i < GenericTypeArgumentNames.Length; i++)
+            var offset = typeName.Length;
+            helper.AppendContainerNameTo(Parent, typeName, context);
+            if (offset < typeName.Length)
             {
-                builder.Append(", ");
-                GenericTypeArgumentNames[i].AppendCRefTo(builder, context);
+                typeName.Append('.');
             }
-            builder.Append('}');
-        }
-
-        protected override void AppendFullNameToCore(StringBuilder builder, FormatterContext context)
-        {
-            if (0 < Parent.AppendFullNameTo(builder, context))
-            { builder.Append('.'); }
-            builder.Append(CoreName);
-            builder.Append('<');
-            GenericTypeArgumentNames[0].AppendFullNameTo(builder, context);
-            for (int i = 1; i < GenericTypeArgumentNames.Length; i++)
+            typeName.Append(CoreName);
+            typeName.Append(helper.OpenBracket);
+            var args = GenericTypeArgumentNames;
+            helper.AppendTypeNameTo(args[0], typeName, context);
+            for (int i = 1; i < args.Length; i++)
             {
-                builder.Append(", ");
-                GenericTypeArgumentNames[i].AppendFullNameTo(builder, context);
+                typeName.Append(", ");
+                helper.AppendTypeNameTo(args[i], typeName, context);
             }
-            builder.Append('>');
-        }
-
-        protected override void AppendNameToCore(StringBuilder builder, FormatterContext context)
-        {
-            if (0 < Parent.AppendNameTo(builder, context))
-            { builder.Append('.'); }
-            builder.Append(CoreName);
-            builder.Append('<');
-            GenericTypeArgumentNames[0].AppendNameTo(builder, context);
-            for (int i = 1; i < GenericTypeArgumentNames.Length; i++)
-            {
-                builder.Append(", ");
-                GenericTypeArgumentNames[i].AppendNameTo(builder, context);
-            }
-            builder.Append('>');
+            typeName.Append(helper.CloseBracket);
         }
     }
 }

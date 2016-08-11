@@ -6,43 +6,31 @@ using System.Threading.Tasks;
 
 namespace Fsi.TextTemplating.TypeNames
 {
-internal class NonParameterizedTypeName
-        : TypeNameBase
+    internal class NonParameterizedTypeName
+        : CachedTypeName
     {
-        public NonParameterizedTypeName(Type type, NamespaceName namespaceName)
+        public NonParameterizedTypeName(Type type, INamespaceName namespaceName)
             : base(type)
         {
             Parent = namespaceName;
         }
-        public NonParameterizedTypeName(Type type, TypeName declaringTypeName)
+        public NonParameterizedTypeName(Type type, ITypeName declaringTypeName)
             : base(type)
         {
             Parent = declaringTypeName;
         }
 
-
         private ITypeNameContainer Parent { get; }
 
-
-        protected override void AppendCRefToCore(StringBuilder builder, FormatterContext context)
+        protected override void AppendNameToCore(Helper helper, StringBuilder typeName, IFormatterContext context)
         {
-            if (0 < Parent.AppendCommentNameTo(builder, context))
-            { builder.Append('.'); }
-            builder.Append(Type.Name);
-        }
-
-        protected override void AppendFullNameToCore(StringBuilder builder, FormatterContext context)
-        {
-            if (0 < Parent.AppendFullNameTo(builder, context))
-            { builder.Append('.'); }
-            builder.Append(Type.Name);
-        }
-
-        protected override void AppendNameToCore(StringBuilder builder, FormatterContext context)
-        {
-            if (0 < Parent.AppendNameTo(builder, context))
-            { builder.Append('.'); }
-            builder.Append(Type.Name);
+            var offset = typeName.Length;
+            helper.AppendContainerNameTo(Parent, typeName, context);
+            if (offset < typeName.Length)
+            {
+                typeName.Append('.');
+            }
+            typeName.Append(Type.Name);
         }
     }
 }

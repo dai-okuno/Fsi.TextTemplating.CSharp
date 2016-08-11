@@ -6,29 +6,40 @@ using System.Threading.Tasks;
 
 namespace Fsi.TextTemplating.TypeNames
 {
-internal class NullableTypeName
-        : TypeNameBase
+    internal class NullableTypeName
+        : CachedTypeName
     {
-        public NullableTypeName(Type type, TypeName underlyingTypeName) : base(type)
+        public NullableTypeName(Type type, ITypeName underlyingTypeName)
+            : base(type)
         {
             UnderlyingTypeName = underlyingTypeName;
         }
-        private TypeName UnderlyingTypeName { get; }
-        protected override void AppendCRefToCore(StringBuilder builder, FormatterContext context)
+
+        private ITypeName UnderlyingTypeName { get; }
+
+        protected override void AppendAliasNameToCore(StringBuilder typeName, IFormatterContext context)
         {
-            builder.Append("global::System.Nullable{");
-            UnderlyingTypeName.AppendCRefTo(builder, context);
-            builder.Append('}');
+            typeName.Append("System.Nullable<");
+            UnderlyingTypeName.AppendAliasNameTo(typeName, context);
+            typeName.Append('>');
         }
-        protected override void AppendFullNameToCore(StringBuilder builder, FormatterContext context)
+
+        protected override void AppendCRefNameToCore(StringBuilder typename, IFormatterContext context)
         {
-            UnderlyingTypeName.AppendFullNameTo(builder, context);
-            builder.Append('?');
+            context.GetNamespaceName("System").AppendNameTo(typename, context);
+            typename.Append("Nullable{");
+            UnderlyingTypeName.AppendCRefNameTo(typename, context);
+            typename.Append('}');
         }
-        protected override void AppendNameToCore(StringBuilder builder, FormatterContext context)
+        protected override void AppendFullNameToCore(StringBuilder typeName, IFormatterContext context)
         {
-            UnderlyingTypeName.AppendNameTo(builder, context);
-            builder.Append('?');
+            UnderlyingTypeName.AppendFullNameTo(typeName, context);
+            typeName.Append('?');
+        }
+        protected override void AppendNameToCore(StringBuilder typeName, IFormatterContext context)
+        {
+            UnderlyingTypeName.AppendNameTo(typeName, context);
+            typeName.Append('?');
         }
     }
 }

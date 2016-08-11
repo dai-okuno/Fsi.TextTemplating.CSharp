@@ -7,53 +7,97 @@ using System.Threading.Tasks;
 namespace Fsi.TextTemplating.TypeNames
 {
     internal class NamespaceName
-        : ITypeNameContainer, IEquatable<NamespaceName>
+        : INamespaceName
     {
-        public NamespaceName(string fullName)
+        public NamespaceName(INamespaceName parent, string fullName)
         {
+            Depth = parent.Depth + 1;
             FullName = fullName;
+            Name = fullName.Substring(parent.FullName.Length + 1);
+            Parent = parent;
+            Root = parent.IsGlobal ? this : parent.Root;
         }
 
-        public string FullName { get; set; }
+        private int _ImportedCount;
 
-        public bool IsImported { get; set; }
+        public int Depth { get; }
 
-        public int AppendCommentNameTo(StringBuilder builder, FormatterContext context)
-            => AppendSimplifiedNameTo(builder, context);
+        public string FullName { get; }
+        public bool IsDeclared { get; set; }
+        public bool IsGlobal
+            => false;
 
-        public int AppendFullNameTo(StringBuilder builder, FormatterContext context)
+        public bool IsImported
         {
-            var start = builder.Length;
-            builder.Append(FullName);
-            return builder.Length - start;
+            get { return 0 < _ImportedCount; }
         }
 
-        public int AppendNameTo(StringBuilder builder, FormatterContext context)
-            => AppendSimplifiedNameTo(builder, context);
+        public bool IsRoot
+            => Depth == 1;
+
+        public string Name { get; }
+
+        public INamespaceName Root { get; }
+
+        public INamespaceName Parent { get; }
+
+        private string CachedName { get; set; }
+
+        private IFormatterContext CachedContext { get; set; }
+
+        public void AppendNameTo(StringBuilder typeName, IFormatterContext context)
+        {
+            if (IsImported) return;
+            if (CachedContext != context)
+            {
+                if (!context.NamespaceName.IsGlobal && context.NamespaceName.Root.IsDeclared)
+                {
+                    var offset = typeName.Length;
+                    AppendContainerName(this, typeName);
+                    CachedName = typeName.ToString(offset, typeName.Length - offset);
+                }
+                else
+                {
+                    CachedName = FullName;
+                }
+                CachedContext = context;
+            }
+            typeName.Append(CachedName);
+        }
+
+        public void AppendFullNameTo(StringBuilder typeName, IFormatterContext context)
+        {
+            typeName.Append(FullName);
+        }
+
+        public void BeginImport()
+        {
+            _ImportedCount++;
+        }
+
+        public void EndImport()
+        {
+            _ImportedCount--;
+        }
 
         public override bool Equals(object obj)
-            => Equals(obj as NamespaceName);
+            => Equals(obj as INamespaceName);
 
-        public bool Equals(NamespaceName other)
-            => !ReferenceEquals(other, null)
-            && FullName == other.FullName;
+        public bool Equals(INamespaceName other)
+            => ReferenceEquals(other, this)
+            || (!ReferenceEquals(other, null)
+                && FullName == other.FullName);
 
         public override int GetHashCode()
             => FullName.GetHashCode();
 
         public override string ToString()
             => FullName;
-
-        private int AppendSimplifiedNameTo(StringBuilder builder, FormatterContext context)
+        private void AppendContainerName(INamespaceName namespaceName, StringBuilder typeName)
         {
-            if (IsImported)
-            {
-                return 0;
-            }
-
-            var start = builder.Length;
-            // TODO: Append declared part
-            return builder.Length - start;
+            if (namespaceName.IsDeclared || namespaceName.IsGlobal) return;
+            AppendContainerName(namespaceName.Parent, typeName);
+            typeName.Append(Name).Append('.');
         }
     }
 }
