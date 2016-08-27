@@ -3,23 +3,35 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
+using static Fsi.TextTemplating.Utility;
+
 namespace Fsi.TextTemplating
 {
     using System.Globalization;
+    using System.Text;
+    using TypeNames;
+
     public partial class CSharpHelper
     {
-        private static readonly char[] Chars0 = CreateArray(32, '0');
+        private static readonly char[] _Chars0 = CreateArray(32, '0');
 
-        private static readonly char[] EmptySuffix = new char[0];
+        private static readonly char[] _EmptySuffix = new char[0];
 
-        private static readonly char[] HexPrefix = new[] { '0', 'x' };
+        private static readonly char[] _HexPrefix = new[] { '0', 'x' };
 
-        private static readonly NumberFormatInfo Invariant =
-            NumberFormatInfo.InvariantInfo;
+        private static readonly string[] _DecimalFormats = Enumerable.Range(0, 9).Select(p => p == 0 ? "D" : ("D" + p)).ToArray();
+
+        private static readonly string[] _HexaDecimalFormats = Enumerable.Range(0, 9).Select(p => p == 0 ? "X" : ("X" + p)).ToArray();
+
+        private static NumberFormatInfo Invariant { get; }
+            = NumberFormatInfo.InvariantInfo;
+
+        private CSharpTypeFormatter TypeFormatter { get; }
+            = new CSharpTypeFormatter();
 
         #region byte
 
-        private static char[] ByteSuffix => EmptySuffix;
+        private static char[] ByteSuffix => _EmptySuffix;
 
         private const int DefaultByteDecimalMaxLength = 3;
 
@@ -53,7 +65,7 @@ namespace Fsi.TextTemplating
             }
             else
             {
-                return FormatPositiveDecimal(value, minDigits, ByteSuffix, groupSize);
+                return FormatNaturalDecimal(value, minDigits, ByteSuffix, groupSize);
             }
         }
 
@@ -91,7 +103,7 @@ namespace Fsi.TextTemplating
 
         #region short
 
-        private static char[] Int16Suffix => EmptySuffix;
+        private static char[] Int16Suffix => _EmptySuffix;
 
         private const int DefaultInt16DecimalMaxLength = 5;
 
@@ -125,7 +137,7 @@ namespace Fsi.TextTemplating
             }
             else
             {
-                return FormatPositiveDecimal(value, minDigits, Int16Suffix, groupSize);
+                return FormatNaturalDecimal(value, minDigits, Int16Suffix, groupSize);
             }
         }
 
@@ -164,7 +176,7 @@ namespace Fsi.TextTemplating
         #region int
 
         private static char[] Int32Suffix
-            => EmptySuffix;
+            => _EmptySuffix;
 
         private const int DefaultInt32DecimalMaxLength = 10;
 
@@ -198,7 +210,7 @@ namespace Fsi.TextTemplating
             }
             else
             {
-                return FormatPositiveDecimal(value, minDigits, Int32Suffix, groupSize);
+                return FormatNaturalDecimal(value, minDigits, Int32Suffix, groupSize);
             }
         }
 
@@ -269,7 +281,7 @@ namespace Fsi.TextTemplating
             }
             else
             {
-                return FormatPositiveDecimal(value, minDigits, Int64Suffix, groupSize);
+                return FormatNaturalDecimal(value, minDigits, Int64Suffix, groupSize);
             }
         }
 
@@ -307,7 +319,7 @@ namespace Fsi.TextTemplating
 
         #region sbyte
 
-        private static char[] SByteSuffix => EmptySuffix;
+        private static char[] SByteSuffix => _EmptySuffix;
 
         private const int DefaultSByteDecimalMaxLength = 3;
 
@@ -341,7 +353,7 @@ namespace Fsi.TextTemplating
             }
             else
             {
-                return FormatPositiveDecimal(value, minDigits, SByteSuffix, groupSize);
+                return FormatNaturalDecimal(value, minDigits, SByteSuffix, groupSize);
             }
         }
 
@@ -379,7 +391,7 @@ namespace Fsi.TextTemplating
 
         #region ushort
 
-        private static char[] UInt16Suffix => EmptySuffix;
+        private static char[] UInt16Suffix => _EmptySuffix;
 
         private const int DefaultUInt16DecimalMaxLength = 5;
 
@@ -409,7 +421,7 @@ namespace Fsi.TextTemplating
             }
             else
             {
-                return FormatPositiveDecimal(value, minDigits, UInt16Suffix, groupSize);
+                return FormatNaturalDecimal(value, minDigits, UInt16Suffix, groupSize);
             }
         }
 
@@ -477,7 +489,7 @@ namespace Fsi.TextTemplating
             }
             else
             {
-                return FormatPositiveDecimal(value, minDigits, UInt32Suffix, groupSize);
+                return FormatNaturalDecimal(value, minDigits, UInt32Suffix, groupSize);
             }
         }
 
@@ -545,7 +557,7 @@ namespace Fsi.TextTemplating
             }
             else
             {
-                return FormatPositiveDecimal(value, minDigits, UInt64Suffix, groupSize);
+                return FormatNaturalDecimal(value, minDigits, UInt64Suffix, groupSize);
             }
         }
 
@@ -581,30 +593,157 @@ namespace Fsi.TextTemplating
 
         #endregion
 
-        private static T[] CreateArray<T>(int length, T value)
+        #region System.Type
+        /// <summary></summary>
+        private IFormatterContext Context { get; set; } = new SourceFileFormatterContext();
+
+        /// <summary></summary>
+        /// <param name="type"></param>
+        /// <param name="typeName"></param>
+        public void AppendCRefNameTo(Type type, StringBuilder typeName)
         {
-            var array = new T[length];
-            for (int i = 0; i < array.Length; i++)
+            if (type == null) throw new ArgumentNullException(nameof(type));
+            if (typeName == null) throw new ArgumentNullException(nameof(typeName));
+
+            Context.GetTypeName(type).AppendCRefNameTo(typeName, Context);
+        }
+
+        /// <summary></summary>
+        /// <param name="type"></param>
+        /// <param name="typeName"></param>
+        public void AppendFullNameTo(Type type, StringBuilder typeName)
+        {
+            if (type == null) throw new ArgumentNullException(nameof(type));
+            if (typeName == null) throw new ArgumentNullException(nameof(typeName));
+
+            Context.GetTypeName(type).AppendFullNameTo(typeName, Context);
+        }
+
+        /// <summary></summary>
+        /// <param name="type"></param>
+        /// <param name="typeName"></param>
+        public void AppendNameTo(Type type, StringBuilder typeName)
+        {
+            if (type == null) throw new ArgumentNullException(nameof(type));
+            if (typeName == null) throw new ArgumentNullException(nameof(typeName));
+
+            Context.GetTypeName(type).AppendNameTo(typeName, Context);
+        }
+
+        /// <summary></summary>
+        /// <param name="namespaceName"></param>
+        /// <returns></returns>
+        public IDisposable BeginNamespace(string namespaceName)
+        {
+            var context = new NamespaceDeclarationFormatterContext(Context, namespaceName);
+            Context = context;
+            var declared = Context.NamespaceName;
+            do
             {
-                array[i] = value;
+                declared.IsDeclared = true;
+            } while ((declared = declared.Parent) != Context.Parent.NamespaceName);
+            return new NamespaceDeclaration(this);
+        }
+
+        /// <summary></summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public string CRefNameOf(Type type)
+        {
+            if (type == null) throw new ArgumentNullException(nameof(type));
+
+            return Context.GetTypeName(type).GetCRefName(Context);
+        }
+
+        /// <summary></summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public string Default(Type type)
+        {
+            var builder = new StringBuilder();
+            builder.Append("default(");
+            AppendNameTo(type, builder);
+            builder.Append(')');
+            return builder.ToString();
+        }
+
+        /// <summary></summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public string FullNameOf(Type type)
+        {
+            if (type == null) throw new ArgumentNullException(nameof(type));
+
+            return Context.GetTypeName(type).GetFullName(Context);
+        }
+
+        /// <summary></summary>
+        /// <param name="namespaceName"></param>
+        public void Import(string namespaceName)
+        {
+            Context.Import(namespaceName).BeginImport();
+        }
+
+        /// <summary></summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public string NameOf(Type type)
+        {
+            if (type == null) throw new ArgumentNullException(nameof(type));
+
+            return Context.GetTypeName(type).GetName(Context);
+        }
+
+        /// <summary></summary>
+        internal void EndNamespace()
+        {
+            foreach (var imported in Context.ImportedNamespaceNames)
+            {
+                imported.EndImport();
             }
-            return array;
+            var declared = Context.NamespaceName;
+            do
+            {
+                declared.IsDeclared = false;
+            } while ((declared = declared.Parent) != Context.Parent.NamespaceName);
+            Context = Context.Parent;
         }
 
-        private static void Copy(string src, ref int srcIndex, char[] dest, ref int destIndex, int length)
+        /// <summary></summary>
+        private sealed class NamespaceDeclaration
+            : IDisposable
         {
-            src.CopyTo(srcIndex, dest, destIndex, length);
-            srcIndex += length;
-            destIndex += length;
+            /// <summary></summary>
+            /// <param name="helper"></param>
+            public NamespaceDeclaration(CSharpHelper helper)
+            {
+                Helper = helper;
+            }
+
+            /// <summary></summary>
+            private CSharpHelper Helper { get; }
+
+            /// <summary>Gets or sets this object is disposed.</summary>
+            private bool IsDisposed { get; set; }
+
+            /// <summary>Invoke <see cref="EndNamespace"/> of <see cref="CSharpTypeFormatter"/>.</summary>
+            public void Dispose()
+            {
+                if (IsDisposed) return;
+                IsDisposed = true;
+                Helper.EndNamespace();
+                GC.SuppressFinalize(this);
+            }
         }
 
-        private static int DivRem(int dividend, int divisor, out int remainder)
-        {
-            var result = dividend / divisor;
-            remainder = dividend - (result * divisor);
-            return result;
-        }
+        #endregion
 
+        /// <summary>Converts the value of integer to an equivalent decimal string.</summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="value"></param>
+        /// <param name="minDigits"></param>
+        /// <param name="suffix"></param>
+        /// <returns></returns>
         private static string FormatDecimal<T>(T value, int minDigits, char[] suffix)
             where T : IFormattable
         {
@@ -622,14 +761,77 @@ namespace Fsi.TextTemplating
             }
         }
 
-        /// <summary>Format positive or 0 integer to the decimal format.</summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="value"></param>
-        /// <param name="minDigits"></param>
+        /// <summary>Converts the value of integer to an equivalent hexa-decimal string.</summary>
+        /// <typeparam name="T">The integer type</typeparam>
+        /// <param name="value">The value to convert</param>
+        /// <param name="minDigits">The precision specifier</param>
         /// <param name="suffix"></param>
-        /// <param name="groupSize"></param>
         /// <returns></returns>
-        private static string FormatPositiveDecimal<T>(T value, int minDigits, char[] suffix, int groupSize)
+        private static string FormatHexaDecimal<T>(T value, int minDigits, char[] suffix)
+            where T : IFormattable
+        {
+            var str = value.ToString(GetHexaDecimalFormat(minDigits), Invariant);
+            var chars = new char[_HexPrefix.Length + str.Length + suffix.Length];
+            _HexPrefix.CopyTo(chars, 0);
+            str.CopyTo(0, chars, _HexPrefix.Length, str.Length);
+            suffix.CopyTo(chars, _HexPrefix.Length + str.Length);
+            return new string(chars);
+        }
+
+        /// <summary>Converts the value of integer to an equivalent hexa-decimal string.</summary>
+        /// <typeparam name="T">The integer type</typeparam>
+        /// <param name="value">The value to convert</param>
+        /// <param name="minDigits">The precision specifier</param>
+        /// <param name="suffix"></param>
+        /// <param name="groupSize">the size of group separator.</param>
+        /// <returns></returns>
+        private static string FormatHexaDecimal<T>(T value, int minDigits, char[] suffix, int groupSize)
+            where T : IFormattable
+        {
+            var str = value.ToString(GetHexaDecimalFormat(minDigits), Invariant);
+            int rem;
+            var separatorCount = DivRem(str.Length, groupSize, out rem);
+            char[] chars;
+            int c;
+            var s = 0;
+            if (0 < rem)
+            {
+                var offset = groupSize - rem;
+                chars = new char[_HexPrefix.Length + str.Length + separatorCount + offset + suffix.Length];
+                _HexPrefix.CopyTo(chars, 0);
+                c = _HexPrefix.Length;
+                Array.Copy(_Chars0, 0, chars, c, offset);
+                c += offset;
+                Copy(str, ref s, chars, ref c, rem);
+            }
+            else
+            {
+                separatorCount -= 1;
+                chars = new char[_HexPrefix.Length + str.Length + separatorCount + suffix.Length];
+                _HexPrefix.CopyTo(chars, 0);
+                c = _HexPrefix.Length;
+                Copy(str, ref s, chars, ref c, groupSize);
+            }
+            while (s < str.Length)
+            {
+                chars[c++] = '_';
+                Copy(str, ref s, chars, ref c, groupSize);
+            }
+            if (0 < suffix.Length)
+            {
+                Array.Copy(suffix, 0, chars, c, suffix.Length);
+            }
+            return new string(chars);
+        }
+
+        /// <summary>Converts the value of natural (positive or zero) integer to an equivalent decimal string.</summary>
+        /// <typeparam name="T">The integer type</typeparam>
+        /// <param name="value">The value to convert</param>
+        /// <param name="minDigits">The precision specifier</param>
+        /// <param name="suffix"></param>
+        /// <param name="groupSize">the size of group separator.</param>
+        /// <returns></returns>
+        private static string FormatNaturalDecimal<T>(T value, int minDigits, char[] suffix, int groupSize)
             where T : IFormattable
         {
             var str = value.ToString(GetDecimalFormat(minDigits), Invariant);
@@ -664,62 +866,12 @@ namespace Fsi.TextTemplating
             return new string(chars);
         }
 
-        private static string FormatHexaDecimal<T>(T value, int minDigits, char[] suffix)
-            where T : IFormattable
-        {
-            var str = value.ToString(GetHexaDecimalFormat(minDigits), Invariant);
-            var chars = new char[HexPrefix.Length + str.Length + suffix.Length];
-            HexPrefix.CopyTo(chars, 0);
-            str.CopyTo(0, chars, HexPrefix.Length, str.Length);
-            suffix.CopyTo(chars, HexPrefix.Length + str.Length);
-            return new string(chars);
-        }
-
-        private static string FormatHexaDecimal<T>(T value, int minDigits, char[] suffix, int groupSize)
-            where T : IFormattable
-        {
-            var str = value.ToString(GetHexaDecimalFormat(minDigits), Invariant);
-            int rem;
-            var separatorCount = DivRem(str.Length, groupSize, out rem);
-            char[] chars;
-            int c;
-            var s = 0;
-            if (0 < rem)
-            {
-                var offset = groupSize - rem;
-                chars = new char[HexPrefix.Length + str.Length + separatorCount + offset + suffix.Length];
-                HexPrefix.CopyTo(chars, 0);
-                c = HexPrefix.Length;
-                Array.Copy(Chars0, 0, chars, c, offset);
-                c += offset;
-                Copy(str, ref s, chars, ref c, rem);
-            }
-            else
-            {
-                separatorCount -= 1;
-                chars = new char[HexPrefix.Length + str.Length + separatorCount + suffix.Length];
-                HexPrefix.CopyTo(chars, 0);
-                c = HexPrefix.Length;
-                Copy(str, ref s, chars, ref c, groupSize);
-            }
-            while (s < str.Length)
-            {
-                chars[c++] = '_';
-                Copy(str, ref s, chars, ref c, groupSize);
-            }
-            if (0 < suffix.Length)
-            {
-                Array.Copy(suffix, 0, chars, c, suffix.Length);
-            }
-            return new string(chars);
-        }
-
-        /// <summary>Format negative integer to the decimal format.</summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="value"></param>
-        /// <param name="minDigits"></param>
+        /// <summary>Converts the value of negative integer to an equivalent decimal string.</summary>
+        /// <typeparam name="T">The integer type</typeparam>
+        /// <param name="value">The value to convert</param>
+        /// <param name="minDigits">The precision specifier</param>
         /// <param name="suffix"></param>
-        /// <param name="groupSize"></param>
+        /// <param name="groupSize">the size of group separator.</param>
         /// <returns></returns>
         private static string FormatNegativeDecimal<T>(T value, int minDigits, char[] suffix, int groupSize)
             where T : IFormattable
@@ -754,14 +906,36 @@ namespace Fsi.TextTemplating
             return new string(chars);
         }
 
+        /// <summary>Returns the decimal format string with specified precision specifier.</summary>
+        /// <param name="minDigits">The precision specifier</param>
+        /// <returns></returns>
         private static string GetDecimalFormat(int minDigits)
         {
-            return ((minDigits == 0) ? "D" : ("D" + minDigits));
+            if (minDigits < 0) throw new ArgumentOutOfRangeException(nameof(minDigits));
+            if (minDigits < _DecimalFormats.Length)
+            {
+                return _DecimalFormats[minDigits];
+            }
+            else
+            {
+                return "D" + minDigits;
+            }
         }
 
+        /// <summary>Returns the hexa-decimal format string with specified precision specifier.</summary>
+        /// <param name="minDigits">The precision specifier</param>
+        /// <returns></returns>
         private static string GetHexaDecimalFormat(int minDigits)
         {
-            return ((minDigits == 0) ? "X" : ("X" + minDigits));
+            if (minDigits < 0) throw new ArgumentOutOfRangeException(nameof(minDigits));
+            if (minDigits < _HexaDecimalFormats.Length)
+            {
+                return _HexaDecimalFormats[minDigits];
+            }
+            else
+            {
+                return "X" + minDigits;
+            }
         }
 
     }

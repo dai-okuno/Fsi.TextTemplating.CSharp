@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Fsi.TextTemplating.TypeNames
 {
-    public partial class CSharpTypeFormatter
+    internal partial class CSharpTypeFormatter
     {
         private IFormatterContext Context { get; set; } = new SourceFileFormatterContext();
 

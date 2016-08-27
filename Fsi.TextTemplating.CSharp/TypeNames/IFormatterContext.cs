@@ -7,7 +7,6 @@ namespace Fsi.TextTemplating.TypeNames
 {
     internal interface IFormatterContext
     {
-        SourceFileFormatterContext Root { get; }
         IFormatterContext Parent { get; }
         IEnumerable<INamespaceName> ImportedNamespaceNames { get; }
         INamespaceName NamespaceName { get; }

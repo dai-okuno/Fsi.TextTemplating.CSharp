@@ -17,25 +17,34 @@ namespace Fsi.TextTemplating.TypeNames
 
         private ITypeName UnderlyingTypeName { get; }
 
-        protected override void AppendAliasNameToCore(StringBuilder typeName, IFormatterContext context)
+        /// <summary></summary>
+        /// <param name="typeName"></param>
+        /// <param name="context"></param>
+        protected override void AppendCRefNameToCore(StringBuilder typeName, IFormatterContext context)
         {
-            typeName.Append("System.Nullable<");
-            UnderlyingTypeName.AppendAliasNameTo(typeName, context);
-            typeName.Append('>');
+            var offset = typeName.Length;
+            context.GetNamespaceName("System").AppendCRefNameTo(typeName, context);
+            if (offset < typeName.Length)
+            {
+                typeName.Append('.');
+            }
+            typeName.Append("Nullable{");
+            UnderlyingTypeName.AppendCRefNameTo(typeName, context);
+            typeName.Append('}');
         }
 
-        protected override void AppendCRefNameToCore(StringBuilder typename, IFormatterContext context)
-        {
-            context.GetNamespaceName("System").AppendNameTo(typename, context);
-            typename.Append("Nullable{");
-            UnderlyingTypeName.AppendCRefNameTo(typename, context);
-            typename.Append('}');
-        }
+        /// <summary></summary>
+        /// <param name="typeName"></param>
+        /// <param name="context"></param>
         protected override void AppendFullNameToCore(StringBuilder typeName, IFormatterContext context)
         {
             UnderlyingTypeName.AppendFullNameTo(typeName, context);
             typeName.Append('?');
         }
+
+        /// <summary></summary>
+        /// <param name="typeName"></param>
+        /// <param name="context"></param>
         protected override void AppendNameToCore(StringBuilder typeName, IFormatterContext context)
         {
             UnderlyingTypeName.AppendNameTo(typeName, context);

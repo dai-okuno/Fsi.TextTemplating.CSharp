@@ -15,11 +15,6 @@ namespace Fsi.TextTemplating.TypeNames
             ImportedNamespaceNames = new HashSet<INamespaceName>();
             NamespaceName = new GlobalNamespaceName();
             NamespaceNames = new NamespaceNameCollection();
-            NamespaceNames.Add(GetNamespaceName("System"));
-            NamespaceNames.Add(GetNamespaceName("System.Collections.Generic"));
-            NamespaceNames.Add(GetNamespaceName("System.Linq"));
-            NamespaceNames.Add(GetNamespaceName("System.Text"));
-            NamespaceNames.Add(GetNamespaceName("System.Threading.Tasks"));
         }
         private HashSet<INamespaceName> ImportedNamespaceNames { get; }
         IEnumerable<INamespaceName> IFormatterContext.ImportedNamespaceNames

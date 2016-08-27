@@ -8,6 +8,7 @@ namespace Fsi.TextTemplating.TypeNames
 {
     interface ITypeNameContainer
     {
+        void AppendCRefNameTo(StringBuilder typeName, IFormatterContext context);
         void AppendFullNameTo(StringBuilder typeName, IFormatterContext context);
         void AppendNameTo(StringBuilder typeName, IFormatterContext context);
     }

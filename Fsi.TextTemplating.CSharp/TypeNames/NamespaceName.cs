@@ -45,6 +45,25 @@ namespace Fsi.TextTemplating.TypeNames
 
         private IFormatterContext CachedContext { get; set; }
 
+        /// <summary></summary>
+        /// <param name="typeName"></param>
+        /// <param name="context"></param>
+        public void AppendCRefNameTo(StringBuilder typeName, IFormatterContext context)
+        {
+            AppendNameTo(typeName, context);
+        }
+
+        /// <summary></summary>
+        /// <param name="typeName"></param>
+        /// <param name="context"></param>
+        public void AppendFullNameTo(StringBuilder typeName, IFormatterContext context)
+        {
+            typeName.Append(FullName);
+        }
+
+        /// <summary></summary>
+        /// <param name="typeName"></param>
+        /// <param name="context"></param>
         public void AppendNameTo(StringBuilder typeName, IFormatterContext context)
         {
             if (IsImported) return;
@@ -63,11 +82,6 @@ namespace Fsi.TextTemplating.TypeNames
                 CachedContext = context;
             }
             typeName.Append(CachedName);
-        }
-
-        public void AppendFullNameTo(StringBuilder typeName, IFormatterContext context)
-        {
-            typeName.Append(FullName);
         }
 
         public void BeginImport()
@@ -99,5 +113,6 @@ namespace Fsi.TextTemplating.TypeNames
             AppendContainerName(namespaceName.Parent, typeName);
             typeName.Append(Name).Append('.');
         }
+
     }
 }

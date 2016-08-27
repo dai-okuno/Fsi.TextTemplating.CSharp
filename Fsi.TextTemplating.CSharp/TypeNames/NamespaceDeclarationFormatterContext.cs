@@ -20,9 +20,6 @@ namespace Fsi.TextTemplating.TypeNames
 
         public IFormatterContext Parent { get; }
 
-        public SourceFileFormatterContext Root
-            => Parent.Root;
-
         IEnumerable<INamespaceName> IFormatterContext.ImportedNamespaceNames
             => Parent.ImportedNamespaceNames;
 
@@ -37,7 +34,7 @@ namespace Fsi.TextTemplating.TypeNames
 
         public INamespaceName Import(string namespaceName)
         {
-            var value = Root.Import(namespaceName);
+            var value = Parent.Import(namespaceName);
             ImportedNamespaceNames.Add(value);
             return value;
         }

@@ -1,4 +1,4 @@
-﻿{
+{
   "version": "1.0.0-*",
   "testRunner": "xunit",
   "dependencies": {
@@ -7,8 +7,7 @@
     "Fsi.TextTemplating.CSharp": {
       "target": "project"
     },
-    "NETStandard.Library": "1.6.0"
-  },
+    "NETStandard.Library": "1.6.0"  },
 
   "frameworks": {
     "netcoreapp1.0": {

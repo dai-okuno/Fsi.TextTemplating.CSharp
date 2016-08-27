@@ -38,6 +38,9 @@ namespace Fsi.TextTemplating.TypeNames
         INamespaceName INamespaceName.Root
             => null;
 
+        public void AppendCRefNameTo(StringBuilder typeName, IFormatterContext context)
+        { }
+
         void ITypeNameContainer.AppendFullNameTo(StringBuilder typeName, IFormatterContext context)
         { }
 

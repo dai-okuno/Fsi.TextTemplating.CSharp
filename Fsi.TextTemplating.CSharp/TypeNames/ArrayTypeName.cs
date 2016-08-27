@@ -43,9 +43,30 @@ namespace Fsi.TextTemplating.TypeNames
             return new ArrayTypeName(type, context.GetTypeName(t), ranks);
         }
 
-        protected override void AppendNameToCore(Helper helper, StringBuilder typeName, IFormatterContext context)
+        /// <summary></summary>
+        /// <param name="typeName"></param>
+        /// <param name="context"></param>
+        protected override void AppendCRefNameToCore(StringBuilder typeName, IFormatterContext context)
         {
-            helper.AppendTypeNameTo(ElementTypeName, typeName, context);
+            ElementTypeName.AppendCRefNameTo(typeName, context);
+            typeName.Append(Ranks);
+        }
+
+        /// <summary></summary>
+        /// <param name="typeName"></param>
+        /// <param name="context"></param>
+        protected override void AppendFullNameToCore(StringBuilder typeName, IFormatterContext context)
+        {
+            ElementTypeName.AppendFullNameTo(typeName, context);
+            typeName.Append(Ranks);
+        }
+
+        /// <summary></summary>
+        /// <param name="typeName"></param>
+        /// <param name="context"></param>
+        protected override void AppendNameToCore(StringBuilder typeName, IFormatterContext context)
+        {
+            ElementTypeName.AppendNameTo(typeName, context);
             typeName.Append(Ranks);
         }
     }

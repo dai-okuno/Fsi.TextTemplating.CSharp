@@ -10,7 +10,6 @@ namespace Fsi.TextTemplating.TypeNames
         :ITypeNameContainer
     {
         void AppendAliasNameTo(StringBuilder typeName, IFormatterContext context);
-        void AppendCRefNameTo(StringBuilder typeName, IFormatterContext context);
     }
 
 }

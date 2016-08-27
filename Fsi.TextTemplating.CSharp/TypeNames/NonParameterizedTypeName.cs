@@ -22,10 +22,36 @@ namespace Fsi.TextTemplating.TypeNames
 
         private ITypeNameContainer Parent { get; }
 
-        protected override void AppendNameToCore(Helper helper, StringBuilder typeName, IFormatterContext context)
+        /// <summary></summary>
+        /// <param name="typeName"></param>
+        /// <param name="context"></param>
+        protected override void AppendCRefNameToCore(StringBuilder typeName, IFormatterContext context)
         {
             var offset = typeName.Length;
-            helper.AppendContainerNameTo(Parent, typeName, context);
+            Parent.AppendCRefNameTo(typeName, context);
+            if (offset < typeName.Length)
+            {
+                typeName.Append('.');
+            }
+            typeName.Append(Type.Name);
+        }
+
+        /// <summary></summary>
+        /// <param name="typeName"></param>
+        /// <param name="context"></param>
+        protected override void AppendFullNameToCore(StringBuilder typeName, IFormatterContext context)
+        {
+            Parent.AppendFullNameTo(typeName, context);
+            typeName.Append('.').Append(Type.Name);
+        }
+
+        /// <summary></summary>
+        /// <param name="typeName"></param>
+        /// <param name="context"></param>
+        protected override void AppendNameToCore(StringBuilder typeName, IFormatterContext context)
+        {
+            var offset = typeName.Length;
+            Parent.AppendNameTo(typeName, context);
             if (offset < typeName.Length)
             {
                 typeName.Append('.');

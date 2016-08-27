@@ -32,24 +32,69 @@ namespace Fsi.TextTemplating.TypeNames
         private string GetCoreName(Type type)
             => type.Name.Remove(type.Name.IndexOf('`'));
 
-        protected override void AppendNameToCore(Helper helper, StringBuilder typeName, IFormatterContext context)
+        /// <summary></summary>
+        /// <param name="typeName"></param>
+        /// <param name="context"></param>
+        protected override void AppendCRefNameToCore(StringBuilder typeName, IFormatterContext context)
         {
             var offset = typeName.Length;
-            helper.AppendContainerNameTo(Parent, typeName, context);
+            Parent.AppendCRefNameTo(typeName, context);
             if (offset < typeName.Length)
             {
                 typeName.Append('.');
             }
             typeName.Append(CoreName);
-            typeName.Append(helper.OpenBracket);
+            typeName.Append('{');
             var args = GenericTypeArgumentNames;
-            helper.AppendTypeNameTo(args[0], typeName, context);
+            args[0].AppendCRefNameTo(typeName, context);
             for (int i = 1; i < args.Length; i++)
             {
                 typeName.Append(", ");
-                helper.AppendTypeNameTo(args[i], typeName, context);
+                args[i].AppendCRefNameTo(typeName, context);
             }
-            typeName.Append(helper.CloseBracket);
+            typeName.Append('}');
+        }
+
+        /// <summary></summary>
+        /// <param name="typeName"></param>
+        /// <param name="context"></param>
+        protected override void AppendFullNameToCore(StringBuilder typeName, IFormatterContext context)
+        {
+            Parent.AppendFullNameTo(typeName, context);
+            typeName.Append('.');
+            typeName.Append(CoreName);
+            typeName.Append('<');
+            var args = GenericTypeArgumentNames;
+            args[0].AppendFullNameTo(typeName, context);
+            for (int i = 1; i < args.Length; i++)
+            {
+                typeName.Append(", ");
+                args[i].AppendFullNameTo(typeName, context);
+            }
+            typeName.Append('>');
+        }
+
+        /// <summary></summary>
+        /// <param name="typeName"></param>
+        /// <param name="context"></param>
+        protected override void AppendNameToCore(StringBuilder typeName, IFormatterContext context)
+        {
+            var offset = typeName.Length;
+            Parent.AppendNameTo(typeName, context);
+            if (offset < typeName.Length)
+            {
+                typeName.Append('.');
+            }
+            typeName.Append(CoreName);
+            typeName.Append('<');
+            var args = GenericTypeArgumentNames;
+            args[0].AppendNameTo(typeName, context);
+            for (int i = 1; i < args.Length; i++)
+            {
+                typeName.Append(", ");
+                args[i].AppendNameTo(typeName, context);
+            }
+            typeName.Append('>');
         }
     }
 }
