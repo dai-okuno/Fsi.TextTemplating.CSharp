@@ -26,8 +26,6 @@ namespace Fsi.TextTemplating
         private static NumberFormatInfo Invariant { get; }
             = NumberFormatInfo.InvariantInfo;
 
-        private CSharpTypeFormatter TypeFormatter { get; }
-            = new CSharpTypeFormatter();
 
         #region byte
 
