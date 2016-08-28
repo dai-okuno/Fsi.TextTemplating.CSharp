@@ -30,7 +30,13 @@ namespace Fsi.TextTemplating.CSharp.Tests
             var csharp = new CSharpHelper();
             Assert.Equal(expected, csharp.Decimal(value, groupSize, minDigits));
         }
-
+        [Theory]
+        [InlineData("0x0uL", 0x0uL, 0, 0)]
+        [InlineData("0xFFFFFFFFFFFFFFFFuL", ulong.MaxValue, 0, 0)]
+        [InlineData("0x00_00_00_00_00_00_00_00uL", 0x0uL, 2, 16)]
+        [InlineData("0xFF_FF_FF_FF_FF_FF_FF_FFuL", ulong.MaxValue, 2, 16)]
+        [InlineData("0x0000_0000_0000_0000uL", 0x0uL, 4, 16)]
+        [InlineData("0xFFFF_FFFF_FFFF_FFFFuL", ulong.MaxValue, 4, 16)]
         public void HexaDecimal(string expected, ulong value, int groupSize, int minDigits)
         {
             var csharp = new CSharpHelper();

@@ -87,7 +87,7 @@ namespace Fsi.TextTemplating.CSharp.Tests
             var csharp = new CSharpHelper();
             Assert.Equal(expected, csharp.Decimal(value, groupSize, minDigits));
         }
-
+        [Theory]
         [InlineData("0x0", 0x0, 0, 0)]
         [InlineData("0x1", 0x1, 0, 0)]
         [InlineData("0xA", 0xA, 0, 0)]
@@ -122,7 +122,7 @@ namespace Fsi.TextTemplating.CSharp.Tests
         [InlineData("0x01_00_00_00", 0x01000000, 2, 4)]
         [InlineData("0x10_00_00_00", 0x10000000, 2, 4)]
         [InlineData("0x7F_FF_FF_FF", int.MaxValue, 2, 4)]
-        [InlineData("0x80000000", int.MinValue, 2, 4)]
+        [InlineData("0x80_00_00_00", int.MinValue, 2, 4)]
         [InlineData("0x0000_0000", 0x00000000, 4, 8)]
         [InlineData("0x0000_0001", 0x00000001, 4, 8)]
         [InlineData("0x0000_000A", 0x0000000A, 4, 8)]

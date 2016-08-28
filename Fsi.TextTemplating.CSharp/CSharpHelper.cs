@@ -57,10 +57,6 @@ namespace Fsi.TextTemplating
             {
                 return FormatDecimal(value, minDigits, ByteSuffix);
             }
-            else if (value < 0L)
-            {
-                return FormatNegativeDecimal(value, minDigits, ByteSuffix, groupSize);
-            }
             else
             {
                 return FormatNaturalDecimal(value, minDigits, ByteSuffix, groupSize);
@@ -658,7 +654,9 @@ namespace Fsi.TextTemplating
         /// <returns></returns>
         public string Default(Type type)
         {
-            var builder = new StringBuilder();
+            if (type == null) throw new ArgumentNullException(nameof(type));
+
+            var builder = new StringBuilder(type.FullName.Length + 9);
             builder.Append("default(");
             AppendNameTo(type, builder);
             builder.Append(')');

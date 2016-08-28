@@ -134,6 +134,7 @@ namespace Fsi.TextTemplating.CSharp.Tests
         public override void NameOf(string expected, Type type)
         {
             base.NameOf(expected, type);
+            Default("default(" + expected + ")", type);
         }
     }
 }

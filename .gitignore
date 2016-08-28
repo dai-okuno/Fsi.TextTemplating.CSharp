@@ -243,3 +243,4 @@ ModelManifest.xml
 
 # FAKE - F# Make
 .fake/
+/Fsi.TextTemplating.CSharp.Tests/Coverage

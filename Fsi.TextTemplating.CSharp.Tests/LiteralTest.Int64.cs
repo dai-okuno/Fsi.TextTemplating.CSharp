@@ -41,6 +41,13 @@ namespace Fsi.TextTemplating.CSharp.Tests
             var csharp = new CSharpHelper();
             Assert.Equal(expected, csharp.Decimal(value, groupSize, minDigits));
         }
+        [Theory]
+        [InlineData("0x0L", 0x0L, 0, 0)]
+        [InlineData("0x7FFFFFFFFFFFFFFFL", long.MaxValue, 0, 0)]
+        [InlineData("0x8000000000000000L", long.MinValue, 0, 0)]
+        [InlineData("0x0000_0000_0000_0000L", 0x0L, 4, 16)]
+        [InlineData("0x7FFF_FFFF_FFFF_FFFFL", long.MaxValue, 4, 16)]
+        [InlineData("0x8000_0000_0000_0000L", long.MinValue, 4, 16)]
 
         public void HexaDecimal(string expected, long value, int groupSize, int minDigits)
         {
