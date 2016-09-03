@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Xunit;
+
 namespace Fsi.TextTemplating.CSharp.Tests
 {
     public class TypeNameTest
@@ -11,6 +9,8 @@ namespace Fsi.TextTemplating.CSharp.Tests
         public virtual void AppendCRefNameTo(string expected, Type type)
         {
             var csharp = new CSharpHelper();
+            csharp.Import("System");
+            csharp.Import("System.Threading");
             var typeName = new StringBuilder(type.FullName.Length);
             csharp.AppendCRefNameTo(type, typeName);
             Assert.Equal(expected, typeName.ToString());
@@ -22,7 +22,7 @@ namespace Fsi.TextTemplating.CSharp.Tests
         {
             var csharp = new CSharpHelper();
             csharp.Import("System");
-            csharp.Import("System.Collections");
+            csharp.Import("System.Threading");
             var typeName = new StringBuilder(type.FullName.Length);
             csharp.AppendFullNameTo(type, typeName);
             Assert.Equal(expected, typeName.ToString());
@@ -34,7 +34,7 @@ namespace Fsi.TextTemplating.CSharp.Tests
         {
             var csharp = new CSharpHelper();
             csharp.Import("System");
-            csharp.Import("System.Collections");
+            csharp.Import("System.Threading");
             var typeName = new StringBuilder(type.Name.Length);
             csharp.AppendNameTo(type, typeName);
             Assert.Equal(expected, typeName.ToString());
@@ -46,6 +46,8 @@ namespace Fsi.TextTemplating.CSharp.Tests
         public virtual void CRefNameOf(string expected, Type type)
         {
             var csharp = new CSharpHelper();
+            csharp.Import("System");
+            csharp.Import("System.Threading");
             Assert.Equal(expected, csharp.CRefNameOf(type));
             Assert.Equal(expected, csharp.CRefNameOf(type));
         }
@@ -53,7 +55,7 @@ namespace Fsi.TextTemplating.CSharp.Tests
         {
             var csharp = new CSharpHelper();
             csharp.Import("System");
-            csharp.Import("System.Collections");
+            csharp.Import("System.Threading");
             Assert.Equal(expected, csharp.FullNameOf(type));
             Assert.Equal(expected, csharp.FullNameOf(type));
         }
@@ -61,20 +63,27 @@ namespace Fsi.TextTemplating.CSharp.Tests
         {
             var csharp = new CSharpHelper();
             csharp.Import("System");
-            csharp.Import("System.Collections");
+            csharp.Import("System.Threading");
             Assert.Equal(expected, csharp.NameOf(type));
             Assert.Equal(expected, csharp.NameOf(type));
-        }
-
-        protected void Default(string expected, Type type)
-        {
-            var csharp = new CSharpHelper();
-            csharp.Import("System");
-            csharp.Import("System.Collections");
-            Assert.Equal(expected, csharp.Default(type));
-            Assert.Equal(expected, csharp.Default(type));
         }
     }
 
+    internal class NonParameterized
+    {
+        internal class ParameterizedChild<U1, U2>
+        {
+        }
+        internal class NonParameterizedChild
+        {
+
+        }
+    }
+    internal class Parameterized<T1>
+    {
+        internal class ParameterizedChild<U1>
+        {
+        }
+    }
 }
 

@@ -30,7 +30,18 @@ namespace Fsi.TextTemplating.TypeNames
         private string CoreName { get; }
         private ITypeName[] GenericTypeArgumentNames { get; }
         private string GetCoreName(Type type)
-            => type.Name.Remove(type.Name.IndexOf('`'));
+        {
+            if(type.IsNested)
+            {
+                var start = type.Name.LastIndexOf('+') + 1;
+                var end = type.Name.LastIndexOf('`');
+                return type.Name.Substring(start, end - start);
+            }
+            else
+            {
+                return type.Name.Remove(type.Name.IndexOf('`'));
+            }
+        }
 
         /// <summary></summary>
         /// <param name="typeName"></param>

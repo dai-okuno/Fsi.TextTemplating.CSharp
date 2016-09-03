@@ -93,20 +93,44 @@ namespace Fsi.TextTemplating.TypeNames
                 }
                 else if (type.IsNested)
                 {
-                    var args = type.GenericTypeArguments;
-                    if (0 < args.Length)
+                    Type[] args;
+                    if (type.IsConstructedGenericType)
                     {
-                        var container = type.DeclaringType.GetTypeInfo();
-                        var containerParams = container.GenericTypeParameters;
-                        if (containerParams.Length < args.Length)
+                        args = type.GenericTypeArguments;
+                    }
+                    else
+                    {
+                        var typeInfo = type.GetTypeInfo();
+                        if (typeInfo.IsGenericTypeDefinition)
                         {
-                            var containerArgs = new Type[containerParams.Length];
-                            Array.Copy(args, containerArgs, containerArgs.Length);
-                            value = new ParameterizedTypeName(type, GetTypeName(container.MakeGenericType(containerArgs)), GetTypeNames(args, containerArgs.Length));
+                            args = typeInfo.GenericTypeParameters;
                         }
                         else
                         {
+                            args = Type.EmptyTypes;
+                        }
+                    }
+                    if (0 < args.Length)
+                    {
+                        var declaringArgCount = 0;
+                        var declaring = type.DeclaringType.GetTypeInfo();
+                        if (declaring.IsGenericTypeDefinition)
+                        {
+                            declaringArgCount = declaring.GenericTypeParameters.Length;
+                        }
+                        if (declaringArgCount == args.Length)
+                        {
                             value = new NonParameterizedTypeName(type, GetTypeName(type.DeclaringType.MakeGenericType(args)));
+                        }
+                        else if (0 < declaringArgCount)
+                        {
+                            var declaringArgs = new Type[declaringArgCount];
+                            Array.Copy(args, declaringArgs, declaringArgs.Length);
+                            value = new ParameterizedTypeName(type, GetTypeName(type.DeclaringType.MakeGenericType(declaringArgs)), GetTypeNames(args, declaringArgCount));
+                        }
+                        else
+                        {
+                            value = new ParameterizedTypeName(type, GetTypeName(type.DeclaringType), GetTypeNames(args, 0));
                         }
                     }
                     else
@@ -151,10 +175,10 @@ namespace Fsi.TextTemplating.TypeNames
         }
         private ITypeName[] GetTypeNames(Type[] types, int offset)
         {
-            var result = new ITypeName[types.Length];
-            for (int i = offset; i < types.Length; i++)
+            var result = new ITypeName[types.Length - offset];
+            for (int i = 0; i < result.Length; i++)
             {
-                result[i] = GetTypeName(types[i]);
+                result[i] = GetTypeName(types[i + offset]);
             }
             return result;
         }

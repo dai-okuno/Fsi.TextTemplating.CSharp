@@ -648,21 +648,7 @@ namespace Fsi.TextTemplating
 
             return Context.GetTypeName(type).GetCRefName(Context);
         }
-
-        /// <summary></summary>
-        /// <param name="type"></param>
-        /// <returns></returns>
-        public string Default(Type type)
-        {
-            if (type == null) throw new ArgumentNullException(nameof(type));
-
-            var builder = new StringBuilder(type.FullName.Length + 9);
-            builder.Append("default(");
-            AppendNameTo(type, builder);
-            builder.Append(')');
-            return builder.ToString();
-        }
-
+        
         /// <summary></summary>
         /// <param name="type"></param>
         /// <returns></returns>

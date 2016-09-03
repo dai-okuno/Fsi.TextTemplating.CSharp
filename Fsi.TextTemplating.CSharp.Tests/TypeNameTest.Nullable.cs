@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Threading;
 using Xunit;
 
 namespace Fsi.TextTemplating.CSharp.Tests
@@ -10,51 +8,74 @@ namespace Fsi.TextTemplating.CSharp.Tests
         : TypeNameTest
     {
         [Theory]
-        [InlineData("System.Nullable{int}", typeof(int?))]
-        [InlineData("System.Nullable{System.Collections.Generic.Dictionary{System.Nullable{System.DateTime}, System.Nullable{int}}.Enumerator}", typeof(Dictionary<DateTime?, int?>.Enumerator?))]
+        [InlineData("Nullable{DateTime}", typeof(DateTime?))]
+        [InlineData("Nullable{CancellationToken}", typeof(CancellationToken?))]
+        [InlineData("Nullable{System.Threading.Tasks.ParallelLoopResult}", typeof(System.Threading.Tasks.ParallelLoopResult?))]
+        [InlineData("Nullable{System.Collections.Generic.List{int}.Enumerator}", typeof(System.Collections.Generic.List<int>.Enumerator?))]
 
         public override void AppendCRefNameTo(string expected, Type type)
         {
             base.AppendCRefNameTo(expected, type);
         }
         [Theory]
-        [InlineData("int?", typeof(int?))]
-        [InlineData("System.Collections.Generic.Dictionary<System.DateTime?, int?>.Enumerator?", typeof(Dictionary<DateTime?, int?>.Enumerator?))]
+        [InlineData("System.DateTime?", typeof(DateTime?))]
+        [InlineData("System.Threading.CancellationToken?", typeof(CancellationToken?))]
+        [InlineData("System.Threading.Tasks.ParallelLoopResult?", typeof(System.Threading.Tasks.ParallelLoopResult?))]
+        [InlineData("System.Collections.Generic.List<int>.Enumerator?", typeof(System.Collections.Generic.List<int>.Enumerator?))]
         public override void AppendFullNameTo(string expected, Type type)
         {
             base.AppendFullNameTo(expected, type);
         }
 
         [Theory]
-        [InlineData("int?", typeof(int?))]
-        [InlineData("System.Collections.Generic.Dictionary<DateTime?, int?>.Enumerator?", typeof(Dictionary<DateTime?, int?>.Enumerator?))]
+        [InlineData("DateTime?", typeof(DateTime?))]
+        [InlineData("CancellationToken?", typeof(CancellationToken?))]
+        [InlineData("System.Threading.Tasks.ParallelLoopResult?", typeof(System.Threading.Tasks.ParallelLoopResult?))]
+        [InlineData("System.Collections.Generic.List<int>.Enumerator?", typeof(System.Collections.Generic.List<int>.Enumerator?))]
         public override void AppendNameTo(string expected, Type type)
         {
             base.AppendNameTo(expected, type);
         }
 
         [Theory]
-        [InlineData("System.Nullable{int}", typeof(int?))]
-        [InlineData("System.Nullable{System.Collections.Generic.Dictionary{System.Nullable{System.DateTime}, System.Nullable{int}}.Enumerator}", typeof(Dictionary<DateTime?, int?>.Enumerator?))]
+        [InlineData("Nullable{DateTime}", typeof(DateTime?))]
+        [InlineData("Nullable{CancellationToken}", typeof(CancellationToken?))]
+        [InlineData("Nullable{System.Threading.Tasks.ParallelLoopResult}", typeof(System.Threading.Tasks.ParallelLoopResult?))]
+        [InlineData("Nullable{System.Collections.Generic.List{int}.Enumerator}", typeof(System.Collections.Generic.List<int>.Enumerator?))]
         public override void CRefNameOf(string expected, Type type)
         {
             base.CRefNameOf(expected, type);
         }
         [Theory]
-        [InlineData("int?", typeof(int?))]
-        [InlineData("System.Collections.Generic.Dictionary<System.DateTime?, int?>.Enumerator?", typeof(Dictionary<DateTime?, int?>.Enumerator?))]
+        [InlineData("System.Nullable{System.DateTime}", typeof(DateTime?))]
+        [InlineData("System.Nullable{CancellationToken}", typeof(CancellationToken?))]
+        [InlineData("System.Nullable{System.Threading.Tasks.ParallelLoopResult}", typeof(System.Threading.Tasks.ParallelLoopResult?))]
+        [InlineData("System.Nullable{System.Collections.Generic.List{int}.Enumerator}", typeof(System.Collections.Generic.List<int>.Enumerator?))]
+        public void CRefNameOfWithoutSystemNamespace(string expected, Type type)
+        {
+            var csharp = new CSharpHelper();
+            csharp.Import("System.Threading");
+            Assert.Equal(expected, csharp.CRefNameOf(type));
+            Assert.Equal(expected, csharp.CRefNameOf(type));
+        }
+        [Theory]
+        [InlineData("System.DateTime?", typeof(DateTime?))]
+        [InlineData("System.Threading.CancellationToken?", typeof(CancellationToken?))]
+        [InlineData("System.Threading.Tasks.ParallelLoopResult?", typeof(System.Threading.Tasks.ParallelLoopResult?))]
+        [InlineData("System.Collections.Generic.List<int>.Enumerator?", typeof(System.Collections.Generic.List<int>.Enumerator?))]
         public override void FullNameOf(string expected, Type type)
         {
             base.FullNameOf(expected, type);
         }
 
         [Theory]
-        [InlineData("int?", typeof(int?))]
-        [InlineData("System.Collections.Generic.Dictionary<DateTime?, int?>.Enumerator?", typeof(Dictionary<DateTime?, int?>.Enumerator?))]
+        [InlineData("DateTime?", typeof(DateTime?))]
+        [InlineData("CancellationToken?", typeof(CancellationToken?))]
+        [InlineData("System.Threading.Tasks.ParallelLoopResult?", typeof(System.Threading.Tasks.ParallelLoopResult?))]
+        [InlineData("System.Collections.Generic.List<int>.Enumerator?", typeof(System.Collections.Generic.List<int>.Enumerator?))]
         public override void NameOf(string expected, Type type)
         {
             base.NameOf(expected, type);
-            Default("default(" + expected + ")", type);
         }
     }
 }
