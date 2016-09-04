@@ -13,9 +13,17 @@ namespace Fsi.TextTemplating.TypeNames
         {
             Depth = parent.Depth + 1;
             FullName = fullName;
-            Name = fullName.Substring(parent.FullName.Length + 1);
             Parent = parent;
-            Root = parent.IsGlobal ? this : parent.Root;
+            if (parent.IsGlobal)
+            {
+                Name = fullName;
+                Root = this;
+            }
+            else
+            {
+                Name = fullName.Substring(parent.FullName.Length + 1);
+                Root = parent.Root;
+            }
         }
 
         private int _ImportedCount;
@@ -69,19 +77,38 @@ namespace Fsi.TextTemplating.TypeNames
             if (IsImported) return;
             if (CachedContext != context)
             {
-                if (!context.NamespaceName.IsGlobal && context.NamespaceName.Root.IsDeclared)
-                {
-                    var offset = typeName.Length;
-                    AppendContainerName(this, typeName);
-                    CachedName = typeName.ToString(offset, typeName.Length - offset);
-                }
-                else
+                if (context.NamespaceName.IsGlobal || Root != context.NamespaceName.Root)
                 {
                     CachedName = FullName;
                 }
+                else if (IsDeclared)
+                {
+                    CachedName = string.Empty;
+                }
+                else
+                {
+                    var anscestor = Parent;
+                    for (; ; anscestor = anscestor.Parent)
+                    {
+                        if (anscestor.IsDeclared)
+                        {
+                            CachedName = FullName.Substring(anscestor.FullName.Length + 1);
+                            break;
+                        }
+                        else if (anscestor.IsGlobal)
+                        {
+                            CachedName = FullName;
+                            break;
+                        }
+                    }
+                }
                 CachedContext = context;
+                typeName.Append(CachedName);
             }
-            typeName.Append(CachedName);
+            else
+            {
+                typeName.Append(CachedName);
+            }
         }
 
         public void BeginImport()
