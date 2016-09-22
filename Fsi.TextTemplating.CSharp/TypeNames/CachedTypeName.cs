@@ -11,6 +11,7 @@ namespace Fsi.TextTemplating.TypeNames
     {
 
         private string _AliasName;
+        private IFormatterContext _AliasNameContext;
         private string _CRefName;
         private IFormatterContext _CRefNameContext;
         private string _FullName;
@@ -26,9 +27,12 @@ namespace Fsi.TextTemplating.TypeNames
         /// <param name="context"></param>
         public sealed override void AppendAliasNameTo(StringBuilder typeName, IFormatterContext context)
         {
-            if (_AliasName == null)
+            if (_AliasNameContext != context)
             {
-                AppendNameTo(typeName, context);
+                var offset = typeName.Length;
+                AppendAliasNameToCore(typeName, context);
+                _AliasName = typeName.ToString(offset, typeName.Length - offset);
+                _AliasNameContext = context;
             }
             else
             {
@@ -123,12 +127,12 @@ namespace Fsi.TextTemplating.TypeNames
         {
             if (_AliasName == null)
             {
-                return GetName(context);
+                var typeName = new StringBuilder();
+                AppendAliasNameToCore(typeName, context);
+                _AliasName = typeName.ToString();
+                _AliasNameContext = context;
             }
-            else
-            {
-                return _AliasName;
-            }
+            return _AliasName;
         }
 
         /// <summary>

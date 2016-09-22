@@ -82,6 +82,11 @@ namespace Fsi.TextTemplating.TypeNames
 
         private string CoreName { get; }
         private TypeName[] GenericTypeArgumentNames { get; }
+        /// <summary>
+        /// Append the name for the type alias declaration.
+        /// </summary>
+        /// <param name="typeName">A <see cref="StringBuilder"/> to append the name.</param>
+        /// <param name="context"></param>
         protected override void AppendAliasNameToCore(StringBuilder typeName, IFormatterContext context)
         {
             var offset = typeName.Length;
@@ -91,7 +96,7 @@ namespace Fsi.TextTemplating.TypeNames
                 typeName.Append('.');
             }
             typeName.Append(CoreName);
-            typeName.Append('{');
+            typeName.Append('<');
             var args = GenericTypeArgumentNames;
             args[0].AppendAliasNameTo(typeName, context);
             for (int i = 1; i < args.Length; i++)
@@ -99,10 +104,12 @@ namespace Fsi.TextTemplating.TypeNames
                 typeName.Append(", ");
                 args[i].AppendAliasNameTo(typeName, context);
             }
-            typeName.Append('}');
+            typeName.Append('>');
         }
-        /// <summary></summary>
-        /// <param name="typeName"></param>
+        /// <summary>
+        /// Append the name for cref attribute in document comment.
+        /// </summary>
+        /// <param name="typeName">A <see cref="StringBuilder"/> to append the name.</param>
         /// <param name="context"></param>
         protected override void AppendCRefNameToCore(StringBuilder typeName, IFormatterContext context)
         {
@@ -123,10 +130,10 @@ namespace Fsi.TextTemplating.TypeNames
             }
             typeName.Append('}');
         }
-
-        /// <summary></summary>
-        /// <param name="typeName"></param>
-        /// 
+        /// <summary>
+        /// Append the full name of this object.
+        /// </summary>
+        /// <param name="typeName">A <see cref="StringBuilder"/> to append the name.</param>
         protected override void AppendFullNameToCore(StringBuilder typeName)
         {
             Parent.AppendFullNameTo(typeName);
@@ -142,9 +149,10 @@ namespace Fsi.TextTemplating.TypeNames
             }
             typeName.Append('>');
         }
-
-        /// <summary></summary>
-        /// <param name="typeName"></param>
+        /// <summary>
+        /// Append the name of this object.
+        /// </summary>
+        /// <param name="typeName">A <see cref="StringBuilder"/> to append the name.</param>
         /// <param name="context"></param>
         protected override void AppendNameToCore(StringBuilder typeName, IFormatterContext context)
         {
@@ -165,6 +173,11 @@ namespace Fsi.TextTemplating.TypeNames
             }
             typeName.Append('>');
         }
+        /// <summary>
+        /// Append the name for typeof operator.
+        /// </summary>
+        /// <param name="typeName">A <see cref="StringBuilder"/> to append the name.</param>
+        /// <param name="context"></param>
         protected override void AppendTypeOfNameToCore(StringBuilder typeName, IFormatterContext context)
         {
             var offset = typeName.Length;

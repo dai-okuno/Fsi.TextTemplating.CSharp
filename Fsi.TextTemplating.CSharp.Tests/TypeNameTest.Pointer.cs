@@ -11,22 +11,33 @@ namespace Fsi.TextTemplating.CSharp.Tests
         [InlineData("System.DateTime*", typeof(DateTime))]
         [InlineData("System.Threading.CancellationToken*", typeof(CancellationToken))]
         [InlineData("System.Threading.Tasks.ParallelLoopResult*", typeof(System.Threading.Tasks.ParallelLoopResult))]
+        [InlineData("System.Collections.Generic.List<System.Int32>.Enumerator*", typeof(System.Collections.Generic.List<int>.Enumerator))]
+        [InlineData("System.Func<System.Int32>*", typeof(Func<int>))]
+        public override void AppendAliasNameTo(string expected, Type type)
+        {
+            base.AppendAliasNameTo(expected, type.MakePointerType());
+        }
+
+        [Theory]
+        [InlineData("System.DateTime*", typeof(DateTime))]
+        [InlineData("System.Threading.CancellationToken*", typeof(CancellationToken))]
+        [InlineData("System.Threading.Tasks.ParallelLoopResult*", typeof(System.Threading.Tasks.ParallelLoopResult))]
+        [InlineData("System.Collections.Generic.List<System.Int32>.Enumerator*", typeof(System.Collections.Generic.List<int>.Enumerator))]
+        [InlineData("System.Func<System.Int32>*", typeof(Func<int>))]
+        public override void AliasNameOf(string expected, Type type)
+        {
+            base.AliasNameOf(expected, type.MakePointerType());
+        }
+
+        [Theory]
+        [InlineData("System.DateTime*", typeof(DateTime))]
+        [InlineData("System.Threading.CancellationToken*", typeof(CancellationToken))]
+        [InlineData("System.Threading.Tasks.ParallelLoopResult*", typeof(System.Threading.Tasks.ParallelLoopResult))]
         [InlineData("System.Collections.Generic.List<int>.Enumerator*", typeof(System.Collections.Generic.List<int>.Enumerator))]
         [InlineData("System.Func<int>*", typeof(Func<int>))]
         public override void AppendFullNameTo(string expected, Type type)
         {
             base.AppendFullNameTo(expected, type.MakePointerType());
-        }
-
-        [Theory]
-        [InlineData("DateTime*", typeof(DateTime))]
-        [InlineData("CancellationToken*", typeof(CancellationToken))]
-        [InlineData("System.Threading.Tasks.ParallelLoopResult*", typeof(System.Threading.Tasks.ParallelLoopResult))]
-        [InlineData("System.Collections.Generic.List<int>.Enumerator*", typeof(System.Collections.Generic.List<int>.Enumerator))]
-        [InlineData("Func<int>*", typeof(Func<int>))]
-        public override void AppendNameTo(string expected, Type type)
-        {
-            base.AppendNameTo(expected, type.MakePointerType());
         }
 
         [Theory]
@@ -38,6 +49,17 @@ namespace Fsi.TextTemplating.CSharp.Tests
         public override void FullNameOf(string expected, Type type)
         {
             base.FullNameOf(expected, type.MakePointerType());
+        }
+
+        [Theory]
+        [InlineData("DateTime*", typeof(DateTime))]
+        [InlineData("CancellationToken*", typeof(CancellationToken))]
+        [InlineData("System.Threading.Tasks.ParallelLoopResult*", typeof(System.Threading.Tasks.ParallelLoopResult))]
+        [InlineData("System.Collections.Generic.List<int>.Enumerator*", typeof(System.Collections.Generic.List<int>.Enumerator))]
+        [InlineData("Func<int>*", typeof(Func<int>))]
+        public override void AppendNameTo(string expected, Type type)
+        {
+            base.AppendNameTo(expected, type.MakePointerType());
         }
 
         [Theory]

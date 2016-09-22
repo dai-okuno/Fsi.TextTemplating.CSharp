@@ -19,7 +19,7 @@ namespace Fsi.TextTemplating.CSharp.Tests
         public void Declare1(string expected, Type type)
         {
             var csharp = new CSharpHelper();
-            using (csharp.BeginNamespace("Fsi"))
+            using (csharp.BeginNamespaceDeclaration("Fsi"))
             {
                 Assert.Equal(expected, csharp.NameOf(type));
             }
@@ -34,7 +34,7 @@ namespace Fsi.TextTemplating.CSharp.Tests
         public void Declare2(string expected, Type type)
         {
             var csharp = new CSharpHelper();
-            using (csharp.BeginNamespace("Fsi.TextTemplating"))
+            using (csharp.BeginNamespaceDeclaration("Fsi.TextTemplating"))
             {
                 Assert.Equal(expected, csharp.NameOf(type));
             }
@@ -49,9 +49,9 @@ namespace Fsi.TextTemplating.CSharp.Tests
         public void DeclareNested(string expected, Type type)
         {
             var csharp = new CSharpHelper();
-            using (csharp.BeginNamespace("Fsi"))
+            using (csharp.BeginNamespaceDeclaration("Fsi"))
             {
-                using (csharp.BeginNamespace("TextTemplating"))
+                using (csharp.BeginNamespaceDeclaration("TextTemplating"))
                 {
                     Assert.Equal(expected, csharp.NameOf(type));
                 }
@@ -80,14 +80,14 @@ namespace Fsi.TextTemplating.CSharp.Tests
         {
             var csharp = new CSharpHelper();
             Assert.Equal(atGlobal, csharp.NameOf(type));
-            using (csharp.BeginNamespace("Fsi"))
+            using (csharp.BeginNamespaceDeclaration("Fsi"))
             {
                 csharp.Import("System");
                 csharp.Import("System.Threading");
                 Assert.Equal(inNamespace, csharp.NameOf(type));
             }
             Assert.Equal(atGlobal, csharp.NameOf(type));
-            using (csharp.BeginNamespace("Fsi"))
+            using (csharp.BeginNamespaceDeclaration("Fsi"))
             {
                 csharp.Import("System");
                 csharp.Import("System.Threading");
@@ -105,22 +105,22 @@ namespace Fsi.TextTemplating.CSharp.Tests
         {
             var csharp = new CSharpHelper();
             Assert.Equal(atGlobal, csharp.NameOf(type));
-            using (csharp.BeginNamespace("Fsi"))
+            using (csharp.BeginNamespaceDeclaration("Fsi"))
             {
                 csharp.Import("System");
                 Assert.Equal(inNamespace, csharp.NameOf(type));
-                using (csharp.BeginNamespace("TextTemplating"))
+                using (csharp.BeginNamespaceDeclaration("TextTemplating"))
                 {
                     csharp.Import("System.Threading");
                     Assert.Equal(inNestedNamespace, csharp.NameOf(type));
                 }
             }
             Assert.Equal(atGlobal, csharp.NameOf(type));
-            using (csharp.BeginNamespace("Fsi"))
+            using (csharp.BeginNamespaceDeclaration("Fsi"))
             {
                 csharp.Import("System");
                 Assert.Equal(inNamespace, csharp.NameOf(type));
-                using (csharp.BeginNamespace("TextTemplating"))
+                using (csharp.BeginNamespaceDeclaration("TextTemplating"))
                 {
                     csharp.Import("System.Threading");
                     Assert.Equal(inNestedNamespace, csharp.NameOf(type));

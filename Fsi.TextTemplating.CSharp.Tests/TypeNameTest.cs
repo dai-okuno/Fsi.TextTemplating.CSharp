@@ -6,6 +6,18 @@ namespace Fsi.TextTemplating.CSharp.Tests
 {
     public class TypeNameTest
     {
+        public virtual void AppendAliasNameTo(string expected, Type type)
+        {
+            var csharp = new CSharpHelper();
+            csharp.Import("System");
+            csharp.Import("System.Threading");
+            var typeName = new StringBuilder(type.FullName.Length);
+            csharp.AppendAliasNameTo(type, typeName);
+            Assert.Equal(expected, typeName.ToString());
+            typeName.Clear();
+            csharp.AppendAliasNameTo(type, typeName);
+            Assert.Equal(expected, typeName.ToString());
+        }
         public virtual void AppendCRefNameTo(string expected, Type type)
         {
             var csharp = new CSharpHelper();
@@ -43,6 +55,14 @@ namespace Fsi.TextTemplating.CSharp.Tests
             Assert.Equal(expected, typeName.ToString());
         }
 
+        public virtual void AliasNameOf(string expected,Type type)
+        {
+            var csharp = new CSharpHelper();
+            csharp.Import("System");
+            csharp.Import("System.Threading");
+            Assert.Equal(expected, csharp.AliasNameOf(type));
+            Assert.Equal(expected, csharp.AliasNameOf(type));
+        }
         public virtual void CRefNameOf(string expected, Type type)
         {
             var csharp = new CSharpHelper();
@@ -83,6 +103,10 @@ namespace Fsi.TextTemplating.CSharp.Tests
     {
         internal class ParameterizedChild<U1>
         {
+        }
+        internal class NonParameterizedChild
+        {
+
         }
     }
 }

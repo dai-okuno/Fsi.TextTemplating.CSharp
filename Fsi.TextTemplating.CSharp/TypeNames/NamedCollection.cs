@@ -19,11 +19,11 @@ namespace Fsi.TextTemplating.TypeNames
             }
             else
             {
-                var itemTypeFullName = GetName(item);
+                var itemName = GetName(item);
                 var node = First;
                 while (node.Next != null)
                 {
-                    var comp = NameComparer.Compare(GetName(node.Next.Item), itemTypeFullName);
+                    var comp = NameComparer.Compare(GetName(node.Next.Item), itemName);
                     if (comp < 0)
                     {
                         node = node.Next;

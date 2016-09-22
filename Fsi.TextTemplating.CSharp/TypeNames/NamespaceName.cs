@@ -60,7 +60,7 @@ namespace Fsi.TextTemplating.TypeNames
         /// <param name="context"></param>
         public void AppendAliasNameTo(StringBuilder typeName, IFormatterContext context)
         {
-            AppendNameTo(typeName, context);
+            typeName.Append(FullName);
         }
         /// <summary>
         /// Append the name for cref attribute in document comment.

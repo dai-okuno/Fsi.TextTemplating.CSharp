@@ -32,12 +32,8 @@ namespace Fsi.TextTemplating.TypeNames
         /// <param name="context"></param>
         protected override void AppendAliasNameToCore(StringBuilder typeName, IFormatterContext context)
         {
-            if (!_System.IsImported && !_System.IsDeclared)
-            {
-                typeName.Append("System.");
-            }
-            typeName.Append("Nullable<");
-            UnderlyingTypeName.AppendCRefNameTo(typeName, context);
+            typeName.Append("System.Nullable<");
+            UnderlyingTypeName.AppendAliasNameTo(typeName, context);
             typeName.Append('>');
         }
         /// <summary>

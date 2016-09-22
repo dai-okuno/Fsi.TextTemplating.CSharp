@@ -80,7 +80,7 @@ namespace Fsi.TextTemplating.TypeNames
         /// <param name="context"></param>
         /// <returns></returns>
         public override int GetHashCode()
-            => GetFullName().GetHashCode();
+            => TypeFullName.GetHashCode();
         /// <summary>
         /// Gets the name of this object.
         /// </summary>
@@ -98,7 +98,7 @@ namespace Fsi.TextTemplating.TypeNames
         /// </summary>
         /// <returns></returns>
         public override string ToString()
-            => GetFullName();
+            => TypeFullName;
 
     }
 }

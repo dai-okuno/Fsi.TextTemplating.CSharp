@@ -66,7 +66,7 @@ namespace Fsi.TextTemplating.TypeNames
             => ReferenceEquals(other, this);
 
         public override int GetHashCode()
-            => Name.GetHashCode();
+            => FullName.GetHashCode();
 
     }
 }
