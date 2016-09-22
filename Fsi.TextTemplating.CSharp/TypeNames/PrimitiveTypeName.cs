@@ -13,27 +13,33 @@ namespace Fsi.TextTemplating.TypeNames
         {
             Type = type;
             PrimitiveName = primitiveName;
+            TypeFullName = type.FullName;
         }
-        public static PrimitiveTypeName @char { get; } = new PrimitiveTypeName(typeof(char), nameof(@char));
-        public static PrimitiveTypeName @sbyte { get; } = new PrimitiveTypeName(typeof(sbyte), nameof(@sbyte));
-        public static PrimitiveTypeName @short { get; } = new PrimitiveTypeName(typeof(short), nameof(@short));
-        public static PrimitiveTypeName @int { get; } = new PrimitiveTypeName(typeof(int), nameof(@int));
-        public static PrimitiveTypeName @long { get; } = new PrimitiveTypeName(typeof(long), nameof(@long));
-        public static PrimitiveTypeName @byte { get; } = new PrimitiveTypeName(typeof(byte), nameof(@byte));
-        public static PrimitiveTypeName @ushort { get; } = new PrimitiveTypeName(typeof(ushort), nameof(@ushort));
-        public static PrimitiveTypeName @uint { get; } = new PrimitiveTypeName(typeof(uint), nameof(@uint));
-        public static PrimitiveTypeName @ulong { get; } = new PrimitiveTypeName(typeof(ulong), nameof(@ulong));
-        public static PrimitiveTypeName @float { get; } = new PrimitiveTypeName(typeof(float), nameof(@float));
-        public static PrimitiveTypeName @double { get; } = new PrimitiveTypeName(typeof(double), nameof(@double));
-        public static PrimitiveTypeName @decimal { get; } = new PrimitiveTypeName(typeof(decimal), nameof(@decimal));
-        public static PrimitiveTypeName @bool { get; } = new PrimitiveTypeName(typeof(bool), nameof(@bool));
-        public static PrimitiveTypeName @string { get; } = new PrimitiveTypeName(typeof(string), nameof(@string));
-        public static PrimitiveTypeName @object { get; } = new PrimitiveTypeName(typeof(object), nameof(@object));
-        public static PrimitiveTypeName @void { get; } = new PrimitiveTypeName(typeof(void), nameof(@void));
+        private static readonly PrimitiveTypeName[] _Values =
+            new PrimitiveTypeName[]
+            {
+                new PrimitiveTypeName(typeof(char), "char"),
+                new PrimitiveTypeName(typeof(sbyte), "sbyte"),
+                new PrimitiveTypeName(typeof(short), "short"),
+                new PrimitiveTypeName(typeof(int), "int"),
+                new PrimitiveTypeName(typeof(long), "long"),
+                new PrimitiveTypeName(typeof(byte), "byte"),
+                new PrimitiveTypeName(typeof(ushort), "ushort"),
+                new PrimitiveTypeName(typeof(uint), "uint"),
+                new PrimitiveTypeName(typeof(ulong), "ulong"),
+                new PrimitiveTypeName(typeof(float), "float"),
+                new PrimitiveTypeName(typeof(double), "double"),
+                new PrimitiveTypeName(typeof(decimal), "decimal"),
+                new PrimitiveTypeName(typeof(bool), "bool"),
+                new PrimitiveTypeName(typeof(string), "string"),
+                new PrimitiveTypeName(typeof(object), "object"),
+                new PrimitiveTypeName(typeof(void), "void"),
+            };
+        public static IReadOnlyList<PrimitiveTypeName> GetValues(FlyweightFactory factory)
+            => _Values;
         public string PrimitiveName { get; }
 
-        public override Type Type { get; }
-
+        public Type Type { get; }
         public override void AppendAliasNameTo(StringBuilder typeName, IFormatterContext context)
         {
             typeName.Append(Type.FullName);
@@ -44,7 +50,7 @@ namespace Fsi.TextTemplating.TypeNames
             typeName.Append(PrimitiveName);
         }
 
-        public override void AppendFullNameTo(StringBuilder typeName, IFormatterContext context)
+        public override void AppendFullNameTo(StringBuilder typeName)
         {
             typeName.Append(PrimitiveName);
         }
@@ -53,17 +59,23 @@ namespace Fsi.TextTemplating.TypeNames
         {
             typeName.Append(PrimitiveName);
         }
-
+        public override void AppendTypeOfNameTo(StringBuilder typeName, IFormatterContext context)
+        {
+            typeName.Append(PrimitiveName);
+        }
         public override string GetAliasName(IFormatterContext context)
             => Type.FullName;
 
         public override string GetCRefName(IFormatterContext context)
             => PrimitiveName;
 
-        public override string GetFullName(IFormatterContext context)
+        public override string GetFullName()
             => PrimitiveName;
-
+        public override int GetHashCode()
+            => Type.FullName.GetHashCode();
         public override string GetName(IFormatterContext context)
+            => PrimitiveName;
+        public override string GetTypeOfName(IFormatterContext context)
             => PrimitiveName;
     }
 

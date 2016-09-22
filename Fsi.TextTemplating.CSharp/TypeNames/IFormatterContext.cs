@@ -10,8 +10,7 @@ namespace Fsi.TextTemplating.TypeNames
         IFormatterContext Parent { get; }
         IEnumerable<INamespaceName> ImportedNamespaceNames { get; }
         INamespaceName NamespaceName { get; }
-        INamespaceName GetNamespaceName(string namespaceName);
-        ITypeName GetTypeName(Type type);
-        INamespaceName Import(string namespaceName);
+        void Import(INamespaceName namespaceName);
+
     }
 }

@@ -9,10 +9,13 @@ namespace Fsi.TextTemplating.TypeNames
     internal class GlobalNamespaceName
         : INamespaceName
     {
-        public static GlobalNamespaceName Default { get; } = new GlobalNamespaceName();
+        public GlobalNamespaceName(FlyweightFactory factory)
+        {
+            Factory = factory;
+        }
         public int Depth
             => 0;
-
+        public FlyweightFactory Factory { get; }
         public string FullName
             => string.Empty;
         bool INamespaceName.IsDeclared
@@ -37,16 +40,18 @@ namespace Fsi.TextTemplating.TypeNames
 
         INamespaceName INamespaceName.Root
             => null;
-
-        public void AppendCRefNameTo(StringBuilder typeName, IFormatterContext context)
+        void ITypeNameContainer.AppendAliasNameTo(StringBuilder typeName, IFormatterContext context)
+        { }
+        void ITypeNameContainer.AppendCRefNameTo(StringBuilder typeName, IFormatterContext context)
         { }
 
-        void ITypeNameContainer.AppendFullNameTo(StringBuilder typeName, IFormatterContext context)
+        void ITypeNameContainer.AppendFullNameTo(StringBuilder typeName)
         { }
 
         void ITypeNameContainer.AppendNameTo(StringBuilder typeName, IFormatterContext context)
         { }
-
+        void ITypeNameContainer.AppendTypeOfNameTo(StringBuilder typeName, IFormatterContext context)
+        { }
         void INamespaceName.BeginImport()
         {
             throw new NotSupportedException();

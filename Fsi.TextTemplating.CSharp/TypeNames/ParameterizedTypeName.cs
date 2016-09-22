@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -9,40 +10,97 @@ namespace Fsi.TextTemplating.TypeNames
     internal class ParameterizedTypeName
             : CachedTypeName
     {
-        public ParameterizedTypeName(Type type, INamespaceName namespaceName, ITypeName[] argNames)
-            : base(type)
+        public ParameterizedTypeName(INamespaceName namespaceName, string name, TypeName[] argNames)
         {
             Parent = namespaceName;
-            CoreName = GetCoreName(type);
+            CoreName = name;
             GenericTypeArgumentNames = argNames;
+            TypeFullName = GetFullName();
         }
 
-        public ParameterizedTypeName(Type type, ITypeName declaringTypeName, ITypeName[] argNames)
-            : base(type)
+        public ParameterizedTypeName(TypeName declaringTypeName, string name, TypeName[] argNames)
         {
             Parent = declaringTypeName;
-            CoreName = GetCoreName(type);
+            CoreName = name;
             GenericTypeArgumentNames = argNames;
+            TypeFullName = GetFullName();
+        }
+        public ParameterizedTypeName(FlyweightFactory factory, Type type)
+        {
+            Parent = factory.GetNamespaceName(type.Namespace);
+            CoreName = GetCoreName(type.Name);
+
+            GenericTypeArgumentNames = factory.GetTypeNames(type.GenericTypeArguments);
+
+            TypeFullName = type.FullName;
         }
 
-        private ITypeNameContainer Parent { get; }
-
-        private string CoreName { get; }
-        private ITypeName[] GenericTypeArgumentNames { get; }
-        private string GetCoreName(Type type)
+        public ParameterizedTypeName(FlyweightFactory factory, TypeInfo typeInfo)
         {
-            if(type.IsNested)
+            Parent = factory.GetNamespaceName(typeInfo.Namespace);
+            CoreName = GetCoreName(typeInfo.Name);
+
+            GenericTypeArgumentNames = factory.GetTypeNames(typeInfo.GenericTypeParameters);
+
+            TypeFullName = typeInfo.FullName;
+        }
+        public ParameterizedTypeName(FlyweightFactory factory, TypeName parentTypeName, Type type)
+        {
+            Parent = parentTypeName;
+            CoreName = GetCoreName(type.Name);
+
+            var parameterized = parentTypeName as ParameterizedTypeName;
+            if (parameterized != null)
             {
-                var start = type.Name.LastIndexOf('+') + 1;
-                var end = type.Name.LastIndexOf('`');
-                return type.Name.Substring(start, end - start);
+                GenericTypeArgumentNames = factory.GetTypeNames(type.GenericTypeArguments, parameterized.GenericTypeArgumentNames.Length);
             }
             else
             {
-                return type.Name.Remove(type.Name.IndexOf('`'));
+                GenericTypeArgumentNames = factory.GetTypeNames(type.GenericTypeArguments);
             }
-        }
 
+            TypeFullName = type.FullName;
+        }
+        public ParameterizedTypeName(FlyweightFactory factory, TypeName parentTypeName, TypeInfo typeInfo)
+        {
+            Parent = parentTypeName;
+            CoreName = GetCoreName(typeInfo.Name);
+
+            var parameterized = parentTypeName as ParameterizedTypeName;
+            if (parameterized != null)
+            {
+                GenericTypeArgumentNames = factory.GetTypeNames(typeInfo.GenericTypeParameters, parameterized.GenericTypeArgumentNames.Length);
+            }
+            else
+            {
+                GenericTypeArgumentNames = factory.GetTypeNames(typeInfo.GenericTypeParameters);
+            }
+
+            TypeFullName = typeInfo.FullName;
+        }
+        private ITypeNameContainer Parent { get; }
+
+        private string CoreName { get; }
+        private TypeName[] GenericTypeArgumentNames { get; }
+        protected override void AppendAliasNameToCore(StringBuilder typeName, IFormatterContext context)
+        {
+            var offset = typeName.Length;
+            Parent.AppendAliasNameTo(typeName, context);
+            if (offset < typeName.Length)
+            {
+                typeName.Append('.');
+            }
+            typeName.Append(CoreName);
+            typeName.Append('{');
+            var args = GenericTypeArgumentNames;
+            args[0].AppendAliasNameTo(typeName, context);
+            for (int i = 1; i < args.Length; i++)
+            {
+                typeName.Append(", ");
+                args[i].AppendAliasNameTo(typeName, context);
+            }
+            typeName.Append('}');
+        }
         /// <summary></summary>
         /// <param name="typeName"></param>
         /// <param name="context"></param>
@@ -68,19 +126,19 @@ namespace Fsi.TextTemplating.TypeNames
 
         /// <summary></summary>
         /// <param name="typeName"></param>
-        /// <param name="context"></param>
-        protected override void AppendFullNameToCore(StringBuilder typeName, IFormatterContext context)
+        /// 
+        protected override void AppendFullNameToCore(StringBuilder typeName)
         {
-            Parent.AppendFullNameTo(typeName, context);
+            Parent.AppendFullNameTo(typeName);
             typeName.Append('.');
             typeName.Append(CoreName);
             typeName.Append('<');
             var args = GenericTypeArgumentNames;
-            args[0].AppendFullNameTo(typeName, context);
+            args[0].AppendFullNameTo(typeName);
             for (int i = 1; i < args.Length; i++)
             {
                 typeName.Append(", ");
-                args[i].AppendFullNameTo(typeName, context);
+                args[i].AppendFullNameTo(typeName);
             }
             typeName.Append('>');
         }
@@ -107,5 +165,35 @@ namespace Fsi.TextTemplating.TypeNames
             }
             typeName.Append('>');
         }
+        protected override void AppendTypeOfNameToCore(StringBuilder typeName, IFormatterContext context)
+        {
+            var offset = typeName.Length;
+            Parent.AppendTypeOfNameTo(typeName, context);
+            if (offset < typeName.Length)
+            {
+                typeName.Append('.');
+            }
+            typeName.Append(CoreName);
+            typeName.Append('{');
+            var args = GenericTypeArgumentNames;
+            args[0].AppendTypeOfNameTo(typeName, context);
+            for (int i = 1; i < args.Length; i++)
+            {
+                typeName.Append(", ");
+                args[i].AppendTypeOfNameTo(typeName, context);
+            }
+            typeName.Append('}');
+        }
+
+        private string GetCoreName(string typeName)
+            => typeName.Remove(typeName.IndexOf('`'));
+
+        private string GetCoreNameNested(string typeName)
+        {
+            var start = typeName.LastIndexOf('+');
+            var end = typeName.IndexOf('`', start);
+            return typeName.Substring(start, end - start);
+        }
+
     }
 }

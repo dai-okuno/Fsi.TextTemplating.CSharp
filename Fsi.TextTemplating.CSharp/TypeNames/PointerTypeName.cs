@@ -9,15 +9,35 @@ namespace Fsi.TextTemplating.TypeNames
     internal class PointerTypeName
         : CachedTypeName
     {
-        public PointerTypeName(Type type, ITypeName elementTypeName)
-            : base(type)
+        public PointerTypeName(TypeName elementTypeName)
         {
             ElementTypeName = elementTypeName;
+            TypeFullName = GetFullName();
+        }
+        public PointerTypeName(FlyweightFactory factory, Type type)
+        {
+            ElementTypeName = factory.GetTypeName(type.GetElementType());
+            TypeFullName = type.FullName;
+        }
+        //public override FlyweightFactory Factory
+        //    => ElementTypeName.Factory;
+        private TypeName ElementTypeName { get; }
+
+        /// <summary>
+        /// Append the name for the type alias declaration.
+        /// </summary>
+        /// <param name="typeName">A <see cref="StringBuilder"/> to append the name.</param>
+        /// <param name="context"></param>
+        protected override void AppendAliasNameToCore(StringBuilder typeName, IFormatterContext context)
+        {
+            ElementTypeName.AppendAliasNameTo(typeName, context);
+            typeName.Append('*');
         }
 
-        private ITypeName ElementTypeName { get; }
-        /// <summary></summary>
-        /// <param name="typeName"></param>
+        /// <summary>
+        /// Append the name for cref attribute in document comment.
+        /// </summary>
+        /// <param name="typeName">A <see cref="StringBuilder"/> to append the name.</param>
         /// <param name="context"></param>
         protected override void AppendCRefNameToCore(StringBuilder typeName, IFormatterContext context)
         {
@@ -25,22 +45,37 @@ namespace Fsi.TextTemplating.TypeNames
             typeName.Append('*');
         }
 
-        /// <summary></summary>
-        /// <param name="typeName"></param>
-        /// <param name="context"></param>
-        protected override void AppendFullNameToCore(StringBuilder typeName, IFormatterContext context)
+        /// <summary>
+        /// Append the full name of this object.
+        /// </summary>
+        /// <param name="typeName">A <see cref="StringBuilder"/> to append the name.</param>
+        protected override void AppendFullNameToCore(StringBuilder typeName)
         {
-            ElementTypeName.AppendFullNameTo(typeName, context);
+            ElementTypeName.AppendFullNameTo(typeName);
             typeName.Append('*');
         }
 
-        /// <summary></summary>
-        /// <param name="typeName"></param>
+        /// <summary>
+        /// Append the name of this object.
+        /// </summary>
+        /// <param name="typeName">A <see cref="StringBuilder"/> to append the name.</param>
         /// <param name="context"></param>
         protected override void AppendNameToCore(StringBuilder typeName, IFormatterContext context)
         {
             ElementTypeName.AppendNameTo(typeName, context);
             typeName.Append('*');
         }
+
+        /// <summary>
+        /// Append the name for typeof operator.
+        /// </summary>
+        /// <param name="typeName">A <see cref="StringBuilder"/> to append the name.</param>
+        /// <param name="context"></param>
+        protected override void AppendTypeOfNameToCore(StringBuilder typeName, IFormatterContext context)
+        {
+            ElementTypeName.AppendTypeOfNameTo(typeName, context);
+            typeName.Append('*');
+        }
+
     }
 }

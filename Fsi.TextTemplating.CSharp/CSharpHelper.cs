@@ -13,6 +13,11 @@ namespace Fsi.TextTemplating
 
     public partial class CSharpHelper
     {
+        public CSharpHelper()
+        {
+            Factory = new FlyweightFactory();
+            Context = new SourceFileFormatterContext(Factory.GlobalNamespaceName);
+        }
         private static readonly char[] _Chars0 = CreateArray(32, '0');
 
         private static readonly char[] _EmptySuffix = new char[0];
@@ -588,9 +593,9 @@ namespace Fsi.TextTemplating
         #endregion
 
         #region System.Type
+        private FlyweightFactory Factory { get; }
         /// <summary></summary>
-        private IFormatterContext Context { get; set; } = new SourceFileFormatterContext();
-
+        private IFormatterContext Context { get; set; }
         /// <summary></summary>
         /// <param name="type"></param>
         /// <param name="typeName"></param>
@@ -599,7 +604,7 @@ namespace Fsi.TextTemplating
             if (type == null) throw new ArgumentNullException(nameof(type));
             if (typeName == null) throw new ArgumentNullException(nameof(typeName));
 
-            Context.GetTypeName(type).AppendCRefNameTo(typeName, Context);
+            Factory.GetTypeName(type).AppendCRefNameTo(typeName, Context);
         }
 
         /// <summary></summary>
@@ -610,7 +615,7 @@ namespace Fsi.TextTemplating
             if (type == null) throw new ArgumentNullException(nameof(type));
             if (typeName == null) throw new ArgumentNullException(nameof(typeName));
 
-            Context.GetTypeName(type).AppendFullNameTo(typeName, Context);
+            Factory.GetTypeName(type).AppendFullNameTo(typeName);
         }
 
         /// <summary></summary>
@@ -621,21 +626,25 @@ namespace Fsi.TextTemplating
             if (type == null) throw new ArgumentNullException(nameof(type));
             if (typeName == null) throw new ArgumentNullException(nameof(typeName));
 
-            Context.GetTypeName(type).AppendNameTo(typeName, Context);
+            Factory.GetTypeName(type).AppendNameTo(typeName, Context);
         }
 
         /// <summary></summary>
-        /// <param name="namespaceName"></param>
+        /// <param name="name"></param>
         /// <returns></returns>
-        public IDisposable BeginNamespace(string namespaceName)
+        public IDisposable BeginNamespace(string name)
         {
+            var namespaceName = Factory.GetNamespaceName(
+                Context.NamespaceName.IsGlobal
+                ? name
+                : (new StringBuilder(Context.NamespaceName.FullName.Length + 1 + name.Length).Append(Context.NamespaceName.FullName).Append('.').Append(name).ToString()));
             var context = new NamespaceDeclarationFormatterContext(Context, namespaceName);
-            Context = context;
-            var declared = Context.NamespaceName;
+            var declared = context.NamespaceName;
             do
             {
                 declared.IsDeclared = true;
-            } while ((declared = declared.Parent) != Context.Parent.NamespaceName);
+            } while ((declared = declared.Parent) != Context.NamespaceName);
+            Context = context;
             return new NamespaceDeclaration(this);
         }
 
@@ -646,9 +655,9 @@ namespace Fsi.TextTemplating
         {
             if (type == null) throw new ArgumentNullException(nameof(type));
 
-            return Context.GetTypeName(type).GetCRefName(Context);
+            return Factory.GetTypeName(type).GetCRefName(Context);
         }
-        
+
         /// <summary></summary>
         /// <param name="type"></param>
         /// <returns></returns>
@@ -656,14 +665,16 @@ namespace Fsi.TextTemplating
         {
             if (type == null) throw new ArgumentNullException(nameof(type));
 
-            return Context.GetTypeName(type).GetFullName(Context);
+            return Factory.GetTypeName(type).GetFullName();
         }
 
         /// <summary></summary>
         /// <param name="namespaceName"></param>
         public void Import(string namespaceName)
         {
-            Context.Import(namespaceName).BeginImport();
+            var ns = Factory.GetNamespaceName(namespaceName);
+            Context.Import(ns);
+            ns.BeginImport();
         }
 
         /// <summary></summary>
@@ -673,7 +684,7 @@ namespace Fsi.TextTemplating
         {
             if (type == null) throw new ArgumentNullException(nameof(type));
 
-            return Context.GetTypeName(type).GetName(Context);
+            return Factory.GetTypeName(type).GetName(Context);
         }
 
         /// <summary></summary>
@@ -683,12 +694,13 @@ namespace Fsi.TextTemplating
             {
                 imported.EndImport();
             }
-            var declared = Context.NamespaceName;
+            var context = Context;
+            Context = context.Parent;
+            var declared = context.NamespaceName;
             do
             {
                 declared.IsDeclared = false;
-            } while ((declared = declared.Parent) != Context.Parent.NamespaceName);
-            Context = Context.Parent;
+            } while ((declared = declared.Parent) != Context.NamespaceName);
         }
 
         /// <summary></summary>
@@ -708,7 +720,7 @@ namespace Fsi.TextTemplating
             /// <summary>Gets or sets this object is disposed.</summary>
             private bool IsDisposed { get; set; }
 
-            /// <summary>Invoke <see cref="EndNamespace"/> of <see cref="CSharpTypeFormatter"/>.</summary>
+            /// <summary>Invoke <see cref="EndNamespace"/> of <see cref="ITypeFormatter"/>.</summary>
             public void Dispose()
             {
                 if (IsDisposed) return;

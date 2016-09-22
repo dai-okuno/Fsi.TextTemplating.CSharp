@@ -29,7 +29,8 @@ namespace Fsi.TextTemplating.TypeNames
         private int _ImportedCount;
 
         public int Depth { get; }
-
+        //public FlyweightFactory Factory
+        //    => Parent.Factory;
         public string FullName { get; }
         public bool IsDeclared { get; set; }
         public bool IsGlobal
@@ -52,25 +53,36 @@ namespace Fsi.TextTemplating.TypeNames
         private string CachedName { get; set; }
 
         private IFormatterContext CachedContext { get; set; }
-
-        /// <summary></summary>
-        /// <param name="typeName"></param>
+        /// <summary>
+        /// Append the name for the type alias declaration.
+        /// </summary>
+        /// <param name="typeName">A <see cref="StringBuilder"/> to append the name.</param>
+        /// <param name="context"></param>
+        public void AppendAliasNameTo(StringBuilder typeName, IFormatterContext context)
+        {
+            AppendNameTo(typeName, context);
+        }
+        /// <summary>
+        /// Append the name for cref attribute in document comment.
+        /// </summary>
+        /// <param name="typeName">A <see cref="StringBuilder"/> to append the name.</param>
         /// <param name="context"></param>
         public void AppendCRefNameTo(StringBuilder typeName, IFormatterContext context)
         {
             AppendNameTo(typeName, context);
         }
-
-        /// <summary></summary>
-        /// <param name="typeName"></param>
-        /// <param name="context"></param>
-        public void AppendFullNameTo(StringBuilder typeName, IFormatterContext context)
+        /// <summary>
+        /// Append the full name of this object.
+        /// </summary>
+        /// <param name="typeName">A <see cref="StringBuilder"/> to append the name.</param>
+        public void AppendFullNameTo(StringBuilder typeName)
         {
             typeName.Append(FullName);
         }
-
-        /// <summary></summary>
-        /// <param name="typeName"></param>
+        /// <summary>
+        /// Append the name of this object.
+        /// </summary>
+        /// <param name="typeName">A <see cref="StringBuilder"/> to append the name.</param>
         /// <param name="context"></param>
         public void AppendNameTo(StringBuilder typeName, IFormatterContext context)
         {
@@ -110,7 +122,15 @@ namespace Fsi.TextTemplating.TypeNames
                 typeName.Append(CachedName);
             }
         }
-
+        /// <summary>
+        /// Append the name for typeof operator.
+        /// </summary>
+        /// <param name="typeName">A <see cref="StringBuilder"/> to append the name.</param>
+        /// <param name="context"></param>
+        public void AppendTypeOfNameTo(StringBuilder typeName, IFormatterContext context)
+        {
+            AppendNameTo(typeName, context);
+        }
         public void BeginImport()
         {
             _ImportedCount++;
@@ -134,12 +154,12 @@ namespace Fsi.TextTemplating.TypeNames
 
         public override string ToString()
             => FullName;
-        private void AppendContainerName(INamespaceName namespaceName, StringBuilder typeName)
-        {
-            if (namespaceName.IsDeclared || namespaceName.IsGlobal) return;
-            AppendContainerName(namespaceName.Parent, typeName);
-            typeName.Append(Name).Append('.');
-        }
+        //private void AppendContainerName(INamespaceName namespaceName, StringBuilder typeName)
+        //{
+        //    if (namespaceName.IsDeclared || namespaceName.IsGlobal) return;
+        //    AppendContainerName(namespaceName.Parent, typeName);
+        //    typeName.Append(Name).Append('.');
+        //}
 
     }
 }

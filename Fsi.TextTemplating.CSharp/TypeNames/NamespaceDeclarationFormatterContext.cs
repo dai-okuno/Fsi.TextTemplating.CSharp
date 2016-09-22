@@ -8,35 +8,24 @@ namespace Fsi.TextTemplating.TypeNames
     internal sealed class NamespaceDeclarationFormatterContext
         : IFormatterContext
     {
-        public NamespaceDeclarationFormatterContext(IFormatterContext parent, string subNamespaceName)
+        public NamespaceDeclarationFormatterContext(IFormatterContext parent, INamespaceName namespaceName)
         {
             Parent = parent;
-            NamespaceName = parent.GetNamespaceName(
-                parent.NamespaceName.IsGlobal
-                ? subNamespaceName
-                : (parent.NamespaceName.FullName + "." + subNamespaceName));
+            NamespaceName = namespaceName;
         }
         public INamespaceName NamespaceName { get; }
 
         public IFormatterContext Parent { get; }
 
         IEnumerable<INamespaceName> IFormatterContext.ImportedNamespaceNames
-            => Parent.ImportedNamespaceNames;
+            => ImportedNamespaceNames;
 
         private List<INamespaceName> ImportedNamespaceNames { get; }
             = new List<INamespaceName>();
 
-        public INamespaceName GetNamespaceName(string namespaceName)
-            => Parent.GetNamespaceName(namespaceName);
-
-        public ITypeName GetTypeName(Type type)
-            => Parent.GetTypeName(type);
-
-        public INamespaceName Import(string namespaceName)
+        public void Import(INamespaceName namespaceName)
         {
-            var value = Parent.Import(namespaceName);
-            ImportedNamespaceNames.Add(value);
-            return value;
+            ImportedNamespaceNames.Add(namespaceName);
         }
 
         public override string ToString()
