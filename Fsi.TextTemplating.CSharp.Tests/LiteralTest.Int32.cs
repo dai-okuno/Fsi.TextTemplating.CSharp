@@ -82,11 +82,43 @@ namespace Fsi.TextTemplating.CSharp.Tests
         [InlineData("-1_0000_0000", -100000000, 4, 0)]
         [InlineData("21_4748_3647", int.MaxValue, 4, 0)]
         [InlineData("-21_4748_3648", int.MinValue, 4, 0)]
+        [InlineData("0_000000000", 0, 9, 10)]
+        [InlineData("0_000000001", 1, 9, 10)]
+        [InlineData("-0_000000001", -1, 9, 10)]
         public void Decimal(string expected, int value, int groupSize, int minDigits)
         {
             var csharp = new CSharpHelper();
             Assert.Equal(expected, csharp.Decimal(value, groupSize, minDigits));
         }
+
+        [Theory]
+        [InlineData(0, -1, 0, typeof(ArgumentOutOfRangeException), "groupSize", "'groupSize' is less than 0.")]
+        [InlineData(0, 0, -1, typeof(ArgumentOutOfRangeException), "minDigits", "'minDigits' is less than 0.")]
+        [InlineData(0, 10, 8, typeof(ArgumentOutOfRangeException), "groupSize", "'groupSize' equals 10 or more.")]
+        [InlineData(0, 10, 9, typeof(ArgumentOutOfRangeException), "groupSize", "'groupSize' equals 10 or more.")]
+        [InlineData(0, 11, 9, typeof(ArgumentOutOfRangeException), "groupSize", "'groupSize' equals 10 or more.")]
+        [InlineData(0, 11, 10, typeof(ArgumentException), "groupSize", "'groupSize' equals 'minDigits' or more.")]
+        [InlineData(0, 10, 10, typeof(ArgumentException), "groupSize", "'groupSize' equals 'minDigits' or more.")]
+        public void DecimalError(int value, int groupSize, int minDigits, Type exceptionType, string paramName, string message)
+        {
+
+            Assert.Throws(exceptionType,
+                () =>
+                {
+                    try
+                    {
+                        var csharp = new CSharpHelper();
+                        csharp.Decimal(value, groupSize, minDigits);
+                    }
+                    catch (ArgumentException ex)
+                    {
+                        Assert.Equal(paramName, ex.ParamName);
+                        Assert.Equal(message + $"\r\nParameter name: {paramName}", ex.Message);
+                        throw;
+                    }
+                });
+        }
+
         [Theory]
         [InlineData("0x0", 0x0, 0, 0)]
         [InlineData("0x1", 0x1, 0, 0)]

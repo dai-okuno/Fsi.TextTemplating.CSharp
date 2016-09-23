@@ -63,10 +63,41 @@ namespace Fsi.TextTemplating.CSharp.Tests
         [InlineData("-10_00", (short)-1000, 2, 4)]
         [InlineData("1_00_00", (short)10000, 2, 4)]
         [InlineData("-1_00_00", (short)-10000, 2, 4)]
+        [InlineData("0_0000", (short)0, 4, 5)]
+        [InlineData("0_0001", (short)1, 4, 5)]
+        [InlineData("-0_0001", (short)-1, 4, 5)]
         public void Decimal(string expected, short value, int groupSize, int minDigits)
         {
             var csharp = new CSharpHelper();
             Assert.Equal(expected, csharp.Decimal(value, groupSize, minDigits));
+        }
+
+        [Theory]
+        [InlineData((short)0, -1, 0, typeof(ArgumentOutOfRangeException), "groupSize", "'groupSize' is less than 0.")]
+        [InlineData((short)0, 0, -1, typeof(ArgumentOutOfRangeException), "minDigits", "'minDigits' is less than 0.")]
+        [InlineData((short)0, 5, 3, typeof(ArgumentOutOfRangeException), "groupSize", "'groupSize' equals 5 or more.")]
+        [InlineData((short)0, 5, 4, typeof(ArgumentOutOfRangeException), "groupSize", "'groupSize' equals 5 or more.")]
+        [InlineData((short)0, 6, 4, typeof(ArgumentOutOfRangeException), "groupSize", "'groupSize' equals 5 or more.")]
+        [InlineData((short)0, 6, 5, typeof(ArgumentException), "groupSize", "'groupSize' equals 'minDigits' or more.")]
+        [InlineData((short)0, 5, 5, typeof(ArgumentException), "groupSize", "'groupSize' equals 'minDigits' or more.")]
+        public void DecimalError(short value, int groupSize, int minDigits, Type exceptionType, string paramName, string message)
+        {
+
+            Assert.Throws(exceptionType,
+                () =>
+                {
+                    try
+                    {
+                        var csharp = new CSharpHelper();
+                        csharp.Decimal(value, groupSize, minDigits);
+                    }
+                    catch (ArgumentException ex)
+                    {
+                        Assert.Equal(paramName, ex.ParamName);
+                        Assert.Equal(message + $"\r\nParameter name: {paramName}", ex.Message);
+                        throw;
+                    }
+                });
         }
 
         [Theory]

@@ -27,7 +27,7 @@ namespace Fsi.TextTemplating
         /// <param name="other"></param>
         /// <returns></returns>
         public static ArgumentException ArgumentEqualsOtherOrMore(string name, string other)
-            => new ArgumentException(Format(Resource.EqualsOtherOrMore, name, other));
+            => new ArgumentException(Format(Resource.EqualsOtherOrMore, name, other), name);
 
         /// <summary>'name' equals value or more.</summary>
         /// <typeparam name="TValue"></typeparam>

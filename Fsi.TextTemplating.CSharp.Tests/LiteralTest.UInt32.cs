@@ -25,11 +25,42 @@ namespace Fsi.TextTemplating.CSharp.Tests
         [InlineData("100_000u", 100000u, 3, 0)]
         [InlineData("1_000_000u", 1000000u, 3, 0)]
         [InlineData("4_294_967_295u", uint.MaxValue, 3, 0)]
+        [InlineData("0_000000000u", 0u, 9, 10)]
+        [InlineData("0_000000001u", 1u, 9, 10)]
         public void Decimal(string expected, uint value, int groupSize, int minDigits)
         {
             var csharp = new CSharpHelper();
             Assert.Equal(expected, csharp.Decimal(value, groupSize, minDigits));
         }
+
+        [Theory]
+        [InlineData(0u, -1, 0, typeof(ArgumentOutOfRangeException), "groupSize", "'groupSize' is less than 0.")]
+        [InlineData(0u, 0, -1, typeof(ArgumentOutOfRangeException), "minDigits", "'minDigits' is less than 0.")]
+        [InlineData(0u, 10, 8, typeof(ArgumentOutOfRangeException), "groupSize", "'groupSize' equals 10 or more.")]
+        [InlineData(0u, 10, 9, typeof(ArgumentOutOfRangeException), "groupSize", "'groupSize' equals 10 or more.")]
+        [InlineData(0u, 11, 9, typeof(ArgumentOutOfRangeException), "groupSize", "'groupSize' equals 10 or more.")]
+        [InlineData(0u, 11, 10, typeof(ArgumentException), "groupSize", "'groupSize' equals 'minDigits' or more.")]
+        [InlineData(0u, 10, 10, typeof(ArgumentException), "groupSize", "'groupSize' equals 'minDigits' or more.")]
+        public void DecimalError(uint value, int groupSize, int minDigits, Type exceptionType, string paramName, string message)
+        {
+
+            Assert.Throws(exceptionType,
+                () =>
+                {
+                    try
+                    {
+                        var csharp = new CSharpHelper();
+                        csharp.Decimal(value, groupSize, minDigits);
+                    }
+                    catch (ArgumentException ex)
+                    {
+                        Assert.Equal(paramName, ex.ParamName);
+                        Assert.Equal(message + $"\r\nParameter name: {paramName}", ex.Message);
+                        throw;
+                    }
+                });
+        }
+
         [Theory]
         [InlineData("0x0u", 0x0u, 0, 0)]
         [InlineData("0x1u", 0x1u, 0, 0)]

@@ -25,11 +25,42 @@ namespace Fsi.TextTemplating.CSharp.Tests
         [InlineData("100_000uL", 100000uL, 3, 0)]
         [InlineData("1_000_000uL", 1000000uL, 3, 0)]
         [InlineData("18_446_744_073_709_551_615uL", ulong.MaxValue, 3, 0)]
+        [InlineData("0_0000000000000000000uL", 0uL, 19, 20)]
+        [InlineData("0_0000000000000000001uL", 1uL, 19, 20)]
         public void Decimal(string expected, ulong value, int groupSize, int minDigits)
         {
             var csharp = new CSharpHelper();
             Assert.Equal(expected, csharp.Decimal(value, groupSize, minDigits));
         }
+
+        [Theory]
+        [InlineData(0uL, -1, 0, typeof(ArgumentOutOfRangeException), "groupSize", "'groupSize' is less than 0.")]
+        [InlineData(0uL, 0, -1, typeof(ArgumentOutOfRangeException), "minDigits", "'minDigits' is less than 0.")]
+        [InlineData(0uL, 20, 18, typeof(ArgumentOutOfRangeException), "groupSize", "'groupSize' equals 20 or more.")]
+        [InlineData(0uL, 20, 19, typeof(ArgumentOutOfRangeException), "groupSize", "'groupSize' equals 20 or more.")]
+        [InlineData(0uL, 21, 19, typeof(ArgumentOutOfRangeException), "groupSize", "'groupSize' equals 20 or more.")]
+        [InlineData(0uL, 21, 20, typeof(ArgumentException), "groupSize", "'groupSize' equals 'minDigits' or more.")]
+        [InlineData(0uL, 20, 20, typeof(ArgumentException), "groupSize", "'groupSize' equals 'minDigits' or more.")]
+        public void DecimalError(ulong value, int groupSize, int minDigits, Type exceptionType, string paramName, string message)
+        {
+
+            Assert.Throws(exceptionType,
+                () =>
+                {
+                    try
+                    {
+                        var csharp = new CSharpHelper();
+                        csharp.Decimal(value, groupSize, minDigits);
+                    }
+                    catch (ArgumentException ex)
+                    {
+                        Assert.Equal(paramName, ex.ParamName);
+                        Assert.Equal(message + $"\r\nParameter name: {paramName}", ex.Message);
+                        throw;
+                    }
+                });
+        }
+
         [Theory]
         [InlineData("0x0uL", 0x0uL, 0, 0)]
         [InlineData("0xFFFFFFFFFFFFFFFFuL", ulong.MaxValue, 0, 0)]

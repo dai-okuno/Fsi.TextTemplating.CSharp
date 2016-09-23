@@ -22,11 +22,42 @@ namespace Fsi.TextTemplating.CSharp.Tests
         [InlineData("100", (ushort)100, 3, 0)]
         [InlineData("1_000", (ushort)1000, 3, 0)]
         [InlineData("65_535", ushort.MaxValue, 3, 0)]
+        [InlineData("0_0000", (ushort)0, 4, 5)]
+        [InlineData("0_0001", (ushort)1, 4, 5)]
         public void Decimal(string expected, ushort value, int groupSize, int minDigits)
         {
             var csharp = new CSharpHelper();
             Assert.Equal(expected, csharp.Decimal(value, groupSize, minDigits));
         }
+
+        [Theory]
+        [InlineData((ushort)0, -1, 0, typeof(ArgumentOutOfRangeException), "groupSize", "'groupSize' is less than 0.")]
+        [InlineData((ushort)0, 0, -1, typeof(ArgumentOutOfRangeException), "minDigits", "'minDigits' is less than 0.")]
+        [InlineData((ushort)0, 5, 3, typeof(ArgumentOutOfRangeException), "groupSize", "'groupSize' equals 5 or more.")]
+        [InlineData((ushort)0, 5, 4, typeof(ArgumentOutOfRangeException), "groupSize", "'groupSize' equals 5 or more.")]
+        [InlineData((ushort)0, 6, 4, typeof(ArgumentOutOfRangeException), "groupSize", "'groupSize' equals 5 or more.")]
+        [InlineData((ushort)0, 6, 5, typeof(ArgumentException), "groupSize", "'groupSize' equals 'minDigits' or more.")]
+        [InlineData((ushort)0, 5, 5, typeof(ArgumentException), "groupSize", "'groupSize' equals 'minDigits' or more.")]
+        public void DecimalError(ushort value, int groupSize, int minDigits, Type exceptionType, string paramName, string message)
+        {
+
+            Assert.Throws(exceptionType,
+                () =>
+                {
+                    try
+                    {
+                        var csharp = new CSharpHelper();
+                        csharp.Decimal(value, groupSize, minDigits);
+                    }
+                    catch (ArgumentException ex)
+                    {
+                        Assert.Equal(paramName, ex.ParamName);
+                        Assert.Equal(message + $"\r\nParameter name: {paramName}", ex.Message);
+                        throw;
+                    }
+                });
+        }
+
         [Theory]
         [InlineData("0x0", (ushort)0x0, 0, 0)]
         [InlineData("0x1", (ushort)0x1, 0, 0)]
