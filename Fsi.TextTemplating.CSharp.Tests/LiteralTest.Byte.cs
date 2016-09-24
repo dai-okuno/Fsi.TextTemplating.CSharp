@@ -37,32 +37,36 @@ namespace Fsi.TextTemplating.CSharp.Tests
             var csharp = new CSharpHelper();
             Assert.Equal(expected, csharp.Decimal(value, groupSize, minDigits));
         }
-        [Theory]
-        [InlineData((byte)0, -1, 0, typeof(ArgumentOutOfRangeException), "groupSize", "'groupSize' is less than 0.")]
-        [InlineData((byte)0, 0, -1, typeof(ArgumentOutOfRangeException), "minDigits", "'minDigits' is less than 0.")]
-        [InlineData((byte)0, 3, 1, typeof(ArgumentOutOfRangeException), "groupSize", "'groupSize' equals 3 or more.")]
-        [InlineData((byte)0, 3, 2, typeof(ArgumentOutOfRangeException), "groupSize", "'groupSize' equals 3 or more.")]
-        [InlineData((byte)0, 4, 2, typeof(ArgumentOutOfRangeException), "groupSize", "'groupSize' equals 3 or more.")]
-        [InlineData((byte)0, 4, 3, typeof(ArgumentException), "groupSize", "'groupSize' equals 'minDigits' or more.")]
-        [InlineData((byte)0, 3, 3, typeof(ArgumentException), "groupSize", "'groupSize' equals 'minDigits' or more.")]
-        public void DecimalError(byte value, int groupSize, int minDigits, Type exceptionType, string paramName, string message)
-        {
 
-            Assert.Throws(exceptionType,
+        [Theory]
+        [InlineData((byte)0, -1, 0, "groupSize", "'groupSize' is less than 0.")]
+        [InlineData((byte)0, 0, -1, "minDigits", "'minDigits' is less than 0.")]
+        [InlineData((byte)0, 3, 1, "groupSize", "'groupSize' equals 3 or more.")]
+        [InlineData((byte)0, 3, 2, "groupSize", "'groupSize' equals 3 or more.")]
+        [InlineData((byte)0, 4, 2, "groupSize", "'groupSize' equals 3 or more.")]
+        public void DecimalArgumentOutOfRangeError(byte value, int groupSize, int minDigits, string paramName, string message)
+        {
+            var ex = Assert.Throws<ArgumentOutOfRangeException>(paramName,
                 () =>
                 {
-                    try
-                    {
-                        var csharp = new CSharpHelper();
-                        csharp.Decimal(value, groupSize, minDigits);
-                    }
-                    catch (ArgumentException ex)
-                    {
-                        Assert.Equal(paramName, ex.ParamName);
-                        Assert.Equal(message + $"\r\nParameter name: {paramName}", ex.Message);
-                        throw;
-                    }
+                    var csharp = new CSharpHelper();
+                    csharp.Decimal(value, groupSize, minDigits);
                 });
+            Assert.Equal(message + $"\r\nParameter name: {paramName}", ex.Message);
+        }
+
+        [Theory]
+        [InlineData((byte)0, 4, 3, "groupSize", "'groupSize' equals 'minDigits' or more.")]
+        [InlineData((byte)0, 3, 3, "groupSize", "'groupSize' equals 'minDigits' or more.")]
+        public void DecimalArgumentError(byte value, int groupSize, int minDigits, string paramName, string message)
+        {
+            var ex = Assert.Throws<ArgumentException>(paramName,
+                () =>
+                {
+                    var csharp = new CSharpHelper();
+                    csharp.Decimal(value, groupSize, minDigits);
+                });
+            Assert.Equal(message + $"\r\nParameter name: {paramName}", ex.Message);
         }
 
         [Theory]
@@ -94,29 +98,34 @@ namespace Fsi.TextTemplating.CSharp.Tests
         }
 
         [Theory]
-        [InlineData((byte)0, -1, 0, typeof(ArgumentOutOfRangeException), "groupSize", "'groupSize' is less than 0.")]
-        [InlineData((byte)0, 0, -1, typeof(ArgumentOutOfRangeException), "minDigits", "'minDigits' is less than 0.")]
-        [InlineData((byte)0, 2, 1, typeof(ArgumentOutOfRangeException), "groupSize", "'groupSize' equals 2 or more.")]
-        [InlineData((byte)0, 3, 1, typeof(ArgumentOutOfRangeException), "groupSize", "'groupSize' equals 2 or more.")]
-        [InlineData((byte)0, 3, 2, typeof(ArgumentException), "groupSize", "'groupSize' equals 'minDigits' or more.")]
-        [InlineData((byte)0, 2, 2, typeof(ArgumentException), "groupSize", "'groupSize' equals 'minDigits' or more.")]
-        public void HexaDecimalError(byte value, int groupSize, int minDigits, Type exceptionType, string paramName, string message)
+        [InlineData((byte)0, -1, 0, "groupSize", "'groupSize' is less than 0.")]
+        [InlineData((byte)0, 0, -1, "minDigits", "'minDigits' is less than 0.")]
+        [InlineData((byte)0, 2, 1, "groupSize", "'groupSize' equals 2 or more.")]
+        [InlineData((byte)0, 3, 1, "groupSize", "'groupSize' equals 2 or more.")]
+        public void HexaDecimalArgumentOutOfError(byte value, int groupSize, int minDigits, string paramName, string message)
         {
-            Assert.Throws(exceptionType,
+            var ex = Assert.Throws<ArgumentOutOfRangeException>(paramName,
                 () =>
                 {
-                    try
-                    {
-                        var csharp = new CSharpHelper();
-                        csharp.HexaDecimal(value, groupSize, minDigits);
-                    }
-                    catch (ArgumentException ex)
-                    {
-                        Assert.Equal(paramName, ex.ParamName);
-                        Assert.Equal(message + $"\r\nParameter name: {paramName}", ex.Message);
-                        throw;
-                    }
+                    var csharp = new CSharpHelper();
+                    csharp.HexaDecimal(value, groupSize, minDigits);
                 });
+            Assert.Equal(message + $"\r\nParameter name: {paramName}", ex.Message);
         }
+
+        [Theory]
+        [InlineData((byte)0, 3, 2, "groupSize", "'groupSize' equals 'minDigits' or more.")]
+        [InlineData((byte)0, 2, 2, "groupSize", "'groupSize' equals 'minDigits' or more.")]
+        public void HexaDecimalArgumentError(byte value, int groupSize, int minDigits, string paramName, string message)
+        {
+            var ex = Assert.Throws<ArgumentException>(paramName,
+                () =>
+                {
+                    var csharp = new CSharpHelper();
+                    csharp.HexaDecimal(value, groupSize, minDigits);
+                });
+            Assert.Equal(message + $"\r\nParameter name: {paramName}", ex.Message);
+        }
+
     }
 }
