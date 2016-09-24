@@ -102,6 +102,7 @@ namespace Fsi.TextTemplating.CSharp.Tests
         [InlineData("0x0_1_0", (sbyte)0x10, 1, 3)]
         [InlineData("0x0_7_F", sbyte.MaxValue, 1, 3)]
         [InlineData("0x0_8_0", sbyte.MinValue, 1, 3)]
+        [InlineData("0x00_80", sbyte.MinValue, 2, 3)]
         public void HexaDecimal(string expected, sbyte value, int groupSize, int minDigits)
         {
             var csharp = new CSharpHelper();

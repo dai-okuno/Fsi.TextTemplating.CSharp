@@ -1,0 +1,288 @@
+﻿<#@ template hostspecific="false" language="C#" #>
+<#@ output extension=".cs" #>
+using System;
+
+using static Fsi.TextTemplating.Utility;
+
+namespace Fsi.TextTemplating
+{
+
+    partial class CSharpHelper
+    {
+<#
+    var emptySuffix = new char[0];
+    var metadatas = new [] {
+        new { Name="SByte", Alias="sbyte", Signed=true, DefaultDecimalMaxLength=3, DefaultHexMaxLength=2, Suffix=emptySuffix },
+        new { Name="Int16", Alias="short", Signed=true, DefaultDecimalMaxLength=5, DefaultHexMaxLength=4, Suffix=emptySuffix },
+        new { Name="Int32", Alias="int", Signed=true, DefaultDecimalMaxLength=10, DefaultHexMaxLength=8, Suffix=emptySuffix },
+        new { Name="Int64", Alias="long", Signed=true, DefaultDecimalMaxLength=19, DefaultHexMaxLength=16, Suffix=new []{'L'} },
+        new { Name="Byte", Alias="byte", Signed=false, DefaultDecimalMaxLength=3, DefaultHexMaxLength=2, Suffix=emptySuffix },
+        new { Name="UInt16", Alias="ushort", Signed=false, DefaultDecimalMaxLength=5, DefaultHexMaxLength=4, Suffix=emptySuffix },
+        new { Name="UInt32", Alias="uint", Signed=false, DefaultDecimalMaxLength=10, DefaultHexMaxLength=8, Suffix=new []{'u'} },
+        new { Name="UInt64", Alias="ulong", Signed=false, DefaultDecimalMaxLength=20, DefaultHexMaxLength=16, Suffix=new []{ 'u', 'L'} },
+    };
+#>
+<#
+    foreach (var metadata in metadatas)
+    { #>
+<#		if (0 < metadata.Suffix.Length) { #>
+
+        private static char[] <#= metadata.Name #>Suffix => <#
+            Write("new [] { '");
+            Write(metadata.Suffix[0].ToString());
+            for (var i = 1; i < metadata.Suffix.Length; i++)
+            {
+                Write("', '");
+                Write(metadata.Suffix[i].ToString());
+            }
+            Write("' }");
+#>;
+<#		} #>
+
+        private const int Default<#= metadata.Name #>DecimalMaxLength = <#= metadata.DefaultDecimalMaxLength #>;
+
+        private const int Default<#= metadata.Name #>HexMaxLength = <#= metadata.DefaultHexMaxLength #>;
+<#	} #>
+<#
+    foreach (var metadata in metadatas)
+    { #>
+
+        /// <summary>Returns the decimal <#= metadata.Alias #> literals.</summary>
+        /// <param name="value">The <#= metadata.Alias #> value.</param>
+        /// <param name="groupSize">The number of digits between separators.</param>
+        /// <param name="minDigits">The minimum number of digits.</param>
+        /// <returns>The decimal <#= metadata.Alias #> literal.</returns>
+        public string Decimal(<#= metadata.Alias #> value, int groupSize, int minDigits)
+        {
+<#		if (metadata.Signed) { #>
+            if (groupSize < 0) throw Error.ArgumentLessThanValue(nameof(groupSize), 0);
+            if (minDigits < 0) throw Error.ArgumentLessThanValue(nameof(minDigits), 0);
+            if (minDigits < Default<#= metadata.Name #>DecimalMaxLength)
+            {
+                if (Default<#= metadata.Name #>DecimalMaxLength <= groupSize) throw Error.ArgumentEqualsValueOrMore(nameof(groupSize), Default<#= metadata.Name #>DecimalMaxLength);
+            }
+            else
+            {
+                if (minDigits <= groupSize) throw Error.ArgumentEqualsOtherOrMore(nameof(groupSize), nameof(minDigits));
+            }
+
+            if (groupSize == 0)
+            {
+<#				FormatDecimal(metadata.Name, metadata.Suffix); #>
+            }
+            else if (value < 0)
+            {
+<#				FormatNegativeDecimal(metadata.Name, metadata.Suffix); #>
+            }
+            else
+            {
+<#				FormatNaturalDecimal(metadata.Name, metadata.Suffix); #>
+            }
+<#		} else { #>
+            if (groupSize < 0) throw Error.ArgumentLessThanValue(nameof(groupSize), 0);
+            if (minDigits < 0) throw Error.ArgumentLessThanValue(nameof(minDigits), 0);
+            if (minDigits < Default<#= metadata.Name #>DecimalMaxLength)
+            {
+                if (Default<#= metadata.Name #>DecimalMaxLength <= groupSize) throw Error.ArgumentEqualsValueOrMore(nameof(groupSize), Default<#= metadata.Name #>DecimalMaxLength);
+            }
+            else
+            {
+                if (minDigits <= groupSize) throw Error.ArgumentEqualsOtherOrMore(nameof(groupSize), nameof(minDigits));
+            }
+
+            if (groupSize == 0)
+            {
+<#				FormatDecimal(metadata.Name, metadata.Suffix); #>
+            }
+            else
+            {
+<#				FormatNaturalDecimal(metadata.Name, metadata.Suffix); #>
+            }
+<#		} #>
+        }
+
+        /// <summary>Returns the hexadecimal <#= metadata.Alias #> literals.</summary>
+        /// <param name="value">the <#= metadata.Alias #> value</param>
+        /// <param name="groupSize">The number of digits between separators.</param>
+        /// <param name="minDigits">The minimum number of digits.</param>
+        /// <returns>The hexadecimal <#= metadata.Alias #> literals</returns>
+
+        public string HexaDecimal(<#= metadata.Alias #> value, int groupSize, int minDigits)
+        {
+            if (groupSize < 0) throw Error.ArgumentLessThanValue(nameof(groupSize), 0);
+            if (minDigits < 0) throw Error.ArgumentLessThanValue(nameof(minDigits), 0);
+
+            if (minDigits < Default<#= metadata.Name #>HexMaxLength)
+            {
+                if (Default<#= metadata.Name #>HexMaxLength <= groupSize) throw Error.ArgumentEqualsValueOrMore(nameof(groupSize), Default<#= metadata.Name #>HexMaxLength);
+            }
+            else
+            {
+                if (minDigits <= groupSize) throw Error.ArgumentEqualsOtherOrMore(nameof(groupSize), nameof(minDigits));
+            }
+
+<#			FormatHexaDecimal(metadata.Name, metadata.Suffix); #>
+        }
+<#	} #>
+    }
+}
+<#+
+void FormatDecimal(string name, char[] suffix)
+{
+    if (0 < suffix.Length) { #>
+                var str = value.ToString(GetDecimalFormat(minDigits), Invariant);
+                var chars = new char[str.Length + <#= name #>Suffix.Length];
+                str.CopyTo(0, chars, 0, str.Length);
+                Array.Copy(<#= name #>Suffix, 0, chars, str.Length, <#= name #>Suffix.Length);
+                return new string(chars);
+<#+	} else { #>
+                return value.ToString(GetDecimalFormat(minDigits), Invariant);;
+<#+	}
+}
+void FormatNaturalDecimal(string name, char[] suffix)
+{
+#>
+            var str = value.ToString(GetDecimalFormat(minDigits), Invariant);
+            int rem;
+            var separatorCount = DivRem(str.Length, groupSize, out rem);
+            char[] chars;
+            var c = 0;
+            var s = 0;
+
+            if (0 < rem)
+            {
+<#+     if (0 < suffix.Length) { #>
+                chars = new char[str.Length + separatorCount + <#= name #>Suffix.Length];
+<#+     } else { #>
+                chars = new char[str.Length + separatorCount];
+<#+     } #>
+                Copy(str, ref s, chars, ref c, rem);
+            }
+            else
+            {
+                separatorCount -= 1;
+<#+     if (0 < suffix.Length) { #>
+                chars = new char[str.Length + separatorCount + <#= name #>Suffix.Length];
+<#+     } else { #>
+                chars = new char[str.Length + separatorCount];
+<#+     } #>
+                Copy(str, ref s, chars, ref c, groupSize);
+            }
+
+            while (s < str.Length)
+            {
+                chars[c++] = '_';
+                Copy(str, ref s, chars, ref c, groupSize);
+            }
+
+<#+     if (0 < suffix.Length) { #>
+            Array.Copy(<#= name #>Suffix, 0, chars, c, <#= name #>Suffix.Length);
+<#+     } #>
+            return new string(chars);
+<#+
+}
+void FormatNegativeDecimal(string name, char[] suffix)
+{
+#>
+            var str = value.ToString(GetDecimalFormat(minDigits), Invariant);
+            int rem;
+            var separatorCount = DivRem(str.Length - 1, groupSize, out rem);
+            char[] chars;
+            var c = 1;
+            var s = 1;
+            if (0 < rem)
+            {
+<#+     if (0 < suffix.Length) { #>
+                chars = new char[str.Length + separatorCount + <#= name #>Suffix.Length];
+<#+     } else { #>
+                chars = new char[str.Length + separatorCount];
+<#+     } #>
+                Copy(str, ref s, chars, ref c, rem);
+            }
+            else
+            {
+                separatorCount -= 1;
+<#+     if (0 < suffix.Length) { #>
+                chars = new char[str.Length + separatorCount + <#= name #>Suffix.Length];
+<#+     } else { #>
+                chars = new char[str.Length + separatorCount];
+<#+     } #>
+              Copy(str, ref s, chars, ref c, groupSize);
+            }
+            chars[0] = '-';
+            while (s < str.Length)
+            {
+                chars[c++] = '_';
+                Copy(str, ref s, chars, ref c, groupSize);
+            }
+<#+         if (0 < suffix.Length) { #>
+            Array.Copy(<#= name #>Suffix, 0, chars, c, <#= name #>Suffix.Length);
+<#+         } #>
+            return new string(chars);
+<#+
+}
+void FormatHexaDecimal(string name, char[] suffix)
+{
+#>
+            if (groupSize == 0)
+            {
+                var str = value.ToString(GetHexaDecimalFormat(minDigits), Invariant);
+<#+     if (0 < suffix.Length) { #>
+                var chars = new char[_HexPrefix.Length + str.Length + <#= name #>Suffix.Length];
+<#+     } else { #>
+                var chars = new char[_HexPrefix.Length + str.Length];
+<#+     } #>
+                _HexPrefix.CopyTo(chars, 0);
+                str.CopyTo(0, chars, _HexPrefix.Length, str.Length);
+<#+     if (0 < suffix.Length) { #>
+                <#= name #>Suffix.CopyTo(chars, _HexPrefix.Length + str.Length);
+<#+     }#>
+                return new string(chars);
+            }
+            else
+            {
+                var str = value.ToString(GetHexaDecimalFormat(minDigits), Invariant);
+                int rem;
+                var separatorCount = DivRem(str.Length, groupSize, out rem);
+                char[] chars;
+                int c;
+                var s = 0;
+                if (0 < rem)
+                {
+                    var offset = groupSize - rem;
+<#+     if (0 < suffix.Length) { #>
+                    chars = new char[_HexPrefix.Length + str.Length + separatorCount + offset + <#= name #>Suffix.Length];
+<#+     } else { #>
+                    chars = new char[_HexPrefix.Length + str.Length + separatorCount + offset];
+<#+     } #>
+                    _HexPrefix.CopyTo(chars, 0);
+                    c = _HexPrefix.Length;
+                    Array.Copy(_Chars0, 0, chars, c, offset);
+                    c += offset;
+                    Copy(str, ref s, chars, ref c, rem);
+                }
+                else
+                {
+                    separatorCount -= 1;
+<#+     if (0 < suffix.Length) { #>
+                    chars = new char[_HexPrefix.Length + str.Length + separatorCount + <#= name #>Suffix.Length];
+<#+     } else { #>
+                    chars = new char[_HexPrefix.Length + str.Length + separatorCount];
+<#+     } #>
+                    _HexPrefix.CopyTo(chars, 0);
+                    c = _HexPrefix.Length;
+                    Copy(str, ref s, chars, ref c, groupSize);
+                }
+                while (s < str.Length)
+                {
+                    chars[c++] = '_';
+                    Copy(str, ref s, chars, ref c, groupSize);
+                }
+<#+     if (0 < suffix.Length) { #>
+                    Array.Copy(<#= name #>Suffix, 0, chars, c, <#= name #>Suffix.Length);
+<#+     }#>
+                return new string(chars);
+            }
+<#+
+}
+#>

@@ -77,6 +77,7 @@ namespace Fsi.TextTemplating.CSharp.Tests
         [InlineData("0x01_00", (ushort)0x100, 2, 4)]
         [InlineData("0x10_00", (ushort)0x1000, 2, 4)]
         [InlineData("0xFF_FF", ushort.MaxValue, 2, 4)]
+        [InlineData("0x01_00", (ushort)0x100, 2, 0)]
 
         public void HexaDecimal(string expected, ushort value, int groupSize, int minDigits)
         {

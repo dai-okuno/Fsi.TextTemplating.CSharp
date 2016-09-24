@@ -81,6 +81,7 @@ namespace Fsi.TextTemplating.CSharp.Tests
         [InlineData("0x7FFF_FFFF_FFFF_FFFFL", long.MaxValue, 4, 16)]
         [InlineData("0x8000_0000_0000_0000L", long.MinValue, 4, 16)]
 
+        [InlineData("0x01_00L", 0x100L, 2, 0)]
         public void HexaDecimal(string expected, long value, int groupSize, int minDigits)
         {
             var csharp = new CSharpHelper();

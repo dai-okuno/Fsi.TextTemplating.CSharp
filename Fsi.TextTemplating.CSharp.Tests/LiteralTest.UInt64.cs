@@ -68,6 +68,7 @@ namespace Fsi.TextTemplating.CSharp.Tests
         [InlineData("0xFF_FF_FF_FF_FF_FF_FF_FFuL", ulong.MaxValue, 2, 16)]
         [InlineData("0x0000_0000_0000_0000uL", 0x0uL, 4, 16)]
         [InlineData("0xFFFF_FFFF_FFFF_FFFFuL", ulong.MaxValue, 4, 16)]
+        [InlineData("0x01_00uL", 0x100uL, 2, 0)]
         public void HexaDecimal(string expected, ulong value, int groupSize, int minDigits)
         {
             var csharp = new CSharpHelper();

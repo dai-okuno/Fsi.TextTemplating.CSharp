@@ -31,6 +31,7 @@ namespace Fsi.TextTemplating.CSharp.Tests
         [InlineData("1_0", (byte)10, 1, 2)]
         [InlineData("1_0_0", (byte)100, 1, 2)]
         [InlineData("0_2_5_5", byte.MaxValue, 1, 4)]
+        [InlineData("1_00", (byte)100, 2, 0)]
         public void Decimal(string expected, byte value, int groupSize, int minDigits)
         {
             var csharp = new CSharpHelper();
@@ -85,6 +86,7 @@ namespace Fsi.TextTemplating.CSharp.Tests
         [InlineData("0x0_0", (byte)0, 1, 2)]
         [InlineData("0x0_1", (byte)1, 1, 2)]
         [InlineData("0x1_0", (byte)16, 1, 2)]
+        [InlineData("0x00_10", (byte)16, 2, 3)]
         public void HexaDecimal(string expected, byte value, int groupSize, int minDigits)
         {
             var csharp = new CSharpHelper();
