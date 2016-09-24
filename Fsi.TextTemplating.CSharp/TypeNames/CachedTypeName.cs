@@ -166,8 +166,6 @@ namespace Fsi.TextTemplating.TypeNames
             }
             return _FullName;
         }
-        public override int GetHashCode()
-            => TypeFullName.GetHashCode();
         /// <summary>
         /// Gets the name of this object.
         /// </summary>

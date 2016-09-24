@@ -5,7 +5,7 @@ using Xunit;
 namespace Fsi.TextTemplating.CSharp.Tests
 {
     public class TypeNameTestParameterized
-        : TypeNameTest
+        : TypeNameTestBase
     {
         [Theory]
         [InlineData("System.Func<TResult>", typeof(Func<>))]

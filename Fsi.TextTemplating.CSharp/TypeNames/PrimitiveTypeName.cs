@@ -82,8 +82,6 @@ namespace Fsi.TextTemplating.TypeNames
 
         public override string GetFullName()
             => PrimitiveName;
-        public override int GetHashCode()
-            => Type.FullName.GetHashCode();
         public override string GetName(IFormatterContext context)
             => PrimitiveName;
         public override string GetTypeOfName(IFormatterContext context)

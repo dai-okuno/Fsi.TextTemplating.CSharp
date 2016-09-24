@@ -12,8 +12,6 @@ namespace Fsi.TextTemplating.TypeNames
             TypeFullName = type.Name;
         }
         private string Name { get; set; }
-        public override int GetHashCode()
-            => Name.GetHashCode();
         /// <summary>
         /// Append the name for the type alias declaration.
         /// </summary>

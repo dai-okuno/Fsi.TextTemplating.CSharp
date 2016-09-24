@@ -33,7 +33,6 @@ namespace Fsi.TextTemplating
         /// <returns></returns>
         private static string GetDecimalFormat(int minDigits)
         {
-            if (minDigits < 0) throw new ArgumentOutOfRangeException(nameof(minDigits));
             if (minDigits < _DecimalFormats.Length)
             {
                 return _DecimalFormats[minDigits];
@@ -49,7 +48,6 @@ namespace Fsi.TextTemplating
         /// <returns></returns>
         private static string GetHexaDecimalFormat(int minDigits)
         {
-            if (minDigits < 0) throw new ArgumentOutOfRangeException(nameof(minDigits));
             if (minDigits < _HexaDecimalFormats.Length)
             {
                 return _HexaDecimalFormats[minDigits];

@@ -20,7 +20,7 @@ namespace Fsi.TextTemplating
 
         private const int DefaultInt32HexMaxLength = 8;
 
-        private static char[] Int64Suffix => new [] { 'L' };
+        private static char[] Int64Suffix => new[] { 'L' };
 
         private const int DefaultInt64DecimalMaxLength = 19;
 
@@ -34,13 +34,13 @@ namespace Fsi.TextTemplating
 
         private const int DefaultUInt16HexMaxLength = 4;
 
-        private static char[] UInt32Suffix => new [] { 'u' };
+        private static char[] UInt32Suffix => new[] { 'u' };
 
         private const int DefaultUInt32DecimalMaxLength = 10;
 
         private const int DefaultUInt32HexMaxLength = 8;
 
-        private static char[] UInt64Suffix => new [] { 'u', 'L' };
+        private static char[] UInt64Suffix => new[] { 'u', 'L' };
 
         private const int DefaultUInt64DecimalMaxLength = 20;
 
@@ -66,63 +66,63 @@ namespace Fsi.TextTemplating
 
             if (groupSize == 0)
             {
-                return value.ToString(GetDecimalFormat(minDigits), Invariant);;
+                return value.ToString(GetDecimalFormat(minDigits), Invariant); ;
             }
             else if (value < 0)
             {
-            var str = value.ToString(GetDecimalFormat(minDigits), Invariant);
-            int rem;
-            var separatorCount = DivRem(str.Length - 1, groupSize, out rem);
-            char[] chars;
-            var c = 1;
-            var s = 1;
-            if (0 < rem)
-            {
-                chars = new char[str.Length + separatorCount];
-                Copy(str, ref s, chars, ref c, rem);
+                var str = value.ToString(GetDecimalFormat(minDigits), Invariant);
+                int rem;
+                var separatorCount = DivRem(str.Length - 1, groupSize, out rem);
+                char[] chars;
+                var c = 1;
+                var s = 1;
+                if (0 < rem)
+                {
+                    chars = new char[str.Length + separatorCount];
+                    Copy(str, ref s, chars, ref c, rem);
+                }
+                else
+                {
+                    separatorCount -= 1;
+                    chars = new char[str.Length + separatorCount];
+                    Copy(str, ref s, chars, ref c, groupSize);
+                }
+                chars[0] = '-';
+                while (s < str.Length)
+                {
+                    chars[c++] = '_';
+                    Copy(str, ref s, chars, ref c, groupSize);
+                }
+                return new string(chars);
             }
             else
             {
-                separatorCount -= 1;
-                chars = new char[str.Length + separatorCount];
-              Copy(str, ref s, chars, ref c, groupSize);
-            }
-            chars[0] = '-';
-            while (s < str.Length)
-            {
-                chars[c++] = '_';
-                Copy(str, ref s, chars, ref c, groupSize);
-            }
-            return new string(chars);
-            }
-            else
-            {
-            var str = value.ToString(GetDecimalFormat(minDigits), Invariant);
-            int rem;
-            var separatorCount = DivRem(str.Length, groupSize, out rem);
-            char[] chars;
-            var c = 0;
-            var s = 0;
+                var str = value.ToString(GetDecimalFormat(minDigits), Invariant);
+                int rem;
+                var separatorCount = DivRem(str.Length, groupSize, out rem);
+                char[] chars;
+                var c = 0;
+                var s = 0;
 
-            if (0 < rem)
-            {
-                chars = new char[str.Length + separatorCount];
-                Copy(str, ref s, chars, ref c, rem);
-            }
-            else
-            {
-                separatorCount -= 1;
-                chars = new char[str.Length + separatorCount];
-                Copy(str, ref s, chars, ref c, groupSize);
-            }
+                if (0 < rem)
+                {
+                    chars = new char[str.Length + separatorCount];
+                    Copy(str, ref s, chars, ref c, rem);
+                }
+                else
+                {
+                    separatorCount -= 1;
+                    chars = new char[str.Length + separatorCount];
+                    Copy(str, ref s, chars, ref c, groupSize);
+                }
 
-            while (s < str.Length)
-            {
-                chars[c++] = '_';
-                Copy(str, ref s, chars, ref c, groupSize);
-            }
+                while (s < str.Length)
+                {
+                    chars[c++] = '_';
+                    Copy(str, ref s, chars, ref c, groupSize);
+                }
 
-            return new string(chars);
+                return new string(chars);
             }
         }
 
@@ -209,63 +209,63 @@ namespace Fsi.TextTemplating
 
             if (groupSize == 0)
             {
-                return value.ToString(GetDecimalFormat(minDigits), Invariant);;
+                return value.ToString(GetDecimalFormat(minDigits), Invariant); ;
             }
             else if (value < 0)
             {
-            var str = value.ToString(GetDecimalFormat(minDigits), Invariant);
-            int rem;
-            var separatorCount = DivRem(str.Length - 1, groupSize, out rem);
-            char[] chars;
-            var c = 1;
-            var s = 1;
-            if (0 < rem)
-            {
-                chars = new char[str.Length + separatorCount];
-                Copy(str, ref s, chars, ref c, rem);
+                var str = value.ToString(GetDecimalFormat(minDigits), Invariant);
+                int rem;
+                var separatorCount = DivRem(str.Length - 1, groupSize, out rem);
+                char[] chars;
+                var c = 1;
+                var s = 1;
+                if (0 < rem)
+                {
+                    chars = new char[str.Length + separatorCount];
+                    Copy(str, ref s, chars, ref c, rem);
+                }
+                else
+                {
+                    separatorCount -= 1;
+                    chars = new char[str.Length + separatorCount];
+                    Copy(str, ref s, chars, ref c, groupSize);
+                }
+                chars[0] = '-';
+                while (s < str.Length)
+                {
+                    chars[c++] = '_';
+                    Copy(str, ref s, chars, ref c, groupSize);
+                }
+                return new string(chars);
             }
             else
             {
-                separatorCount -= 1;
-                chars = new char[str.Length + separatorCount];
-              Copy(str, ref s, chars, ref c, groupSize);
-            }
-            chars[0] = '-';
-            while (s < str.Length)
-            {
-                chars[c++] = '_';
-                Copy(str, ref s, chars, ref c, groupSize);
-            }
-            return new string(chars);
-            }
-            else
-            {
-            var str = value.ToString(GetDecimalFormat(minDigits), Invariant);
-            int rem;
-            var separatorCount = DivRem(str.Length, groupSize, out rem);
-            char[] chars;
-            var c = 0;
-            var s = 0;
+                var str = value.ToString(GetDecimalFormat(minDigits), Invariant);
+                int rem;
+                var separatorCount = DivRem(str.Length, groupSize, out rem);
+                char[] chars;
+                var c = 0;
+                var s = 0;
 
-            if (0 < rem)
-            {
-                chars = new char[str.Length + separatorCount];
-                Copy(str, ref s, chars, ref c, rem);
-            }
-            else
-            {
-                separatorCount -= 1;
-                chars = new char[str.Length + separatorCount];
-                Copy(str, ref s, chars, ref c, groupSize);
-            }
+                if (0 < rem)
+                {
+                    chars = new char[str.Length + separatorCount];
+                    Copy(str, ref s, chars, ref c, rem);
+                }
+                else
+                {
+                    separatorCount -= 1;
+                    chars = new char[str.Length + separatorCount];
+                    Copy(str, ref s, chars, ref c, groupSize);
+                }
 
-            while (s < str.Length)
-            {
-                chars[c++] = '_';
-                Copy(str, ref s, chars, ref c, groupSize);
-            }
+                while (s < str.Length)
+                {
+                    chars[c++] = '_';
+                    Copy(str, ref s, chars, ref c, groupSize);
+                }
 
-            return new string(chars);
+                return new string(chars);
             }
         }
 
@@ -352,63 +352,63 @@ namespace Fsi.TextTemplating
 
             if (groupSize == 0)
             {
-                return value.ToString(GetDecimalFormat(minDigits), Invariant);;
+                return value.ToString(GetDecimalFormat(minDigits), Invariant); ;
             }
             else if (value < 0)
             {
-            var str = value.ToString(GetDecimalFormat(minDigits), Invariant);
-            int rem;
-            var separatorCount = DivRem(str.Length - 1, groupSize, out rem);
-            char[] chars;
-            var c = 1;
-            var s = 1;
-            if (0 < rem)
-            {
-                chars = new char[str.Length + separatorCount];
-                Copy(str, ref s, chars, ref c, rem);
+                var str = value.ToString(GetDecimalFormat(minDigits), Invariant);
+                int rem;
+                var separatorCount = DivRem(str.Length - 1, groupSize, out rem);
+                char[] chars;
+                var c = 1;
+                var s = 1;
+                if (0 < rem)
+                {
+                    chars = new char[str.Length + separatorCount];
+                    Copy(str, ref s, chars, ref c, rem);
+                }
+                else
+                {
+                    separatorCount -= 1;
+                    chars = new char[str.Length + separatorCount];
+                    Copy(str, ref s, chars, ref c, groupSize);
+                }
+                chars[0] = '-';
+                while (s < str.Length)
+                {
+                    chars[c++] = '_';
+                    Copy(str, ref s, chars, ref c, groupSize);
+                }
+                return new string(chars);
             }
             else
             {
-                separatorCount -= 1;
-                chars = new char[str.Length + separatorCount];
-              Copy(str, ref s, chars, ref c, groupSize);
-            }
-            chars[0] = '-';
-            while (s < str.Length)
-            {
-                chars[c++] = '_';
-                Copy(str, ref s, chars, ref c, groupSize);
-            }
-            return new string(chars);
-            }
-            else
-            {
-            var str = value.ToString(GetDecimalFormat(minDigits), Invariant);
-            int rem;
-            var separatorCount = DivRem(str.Length, groupSize, out rem);
-            char[] chars;
-            var c = 0;
-            var s = 0;
+                var str = value.ToString(GetDecimalFormat(minDigits), Invariant);
+                int rem;
+                var separatorCount = DivRem(str.Length, groupSize, out rem);
+                char[] chars;
+                var c = 0;
+                var s = 0;
 
-            if (0 < rem)
-            {
-                chars = new char[str.Length + separatorCount];
-                Copy(str, ref s, chars, ref c, rem);
-            }
-            else
-            {
-                separatorCount -= 1;
-                chars = new char[str.Length + separatorCount];
-                Copy(str, ref s, chars, ref c, groupSize);
-            }
+                if (0 < rem)
+                {
+                    chars = new char[str.Length + separatorCount];
+                    Copy(str, ref s, chars, ref c, rem);
+                }
+                else
+                {
+                    separatorCount -= 1;
+                    chars = new char[str.Length + separatorCount];
+                    Copy(str, ref s, chars, ref c, groupSize);
+                }
 
-            while (s < str.Length)
-            {
-                chars[c++] = '_';
-                Copy(str, ref s, chars, ref c, groupSize);
-            }
+                while (s < str.Length)
+                {
+                    chars[c++] = '_';
+                    Copy(str, ref s, chars, ref c, groupSize);
+                }
 
-            return new string(chars);
+                return new string(chars);
             }
         }
 
@@ -503,61 +503,61 @@ namespace Fsi.TextTemplating
             }
             else if (value < 0)
             {
-            var str = value.ToString(GetDecimalFormat(minDigits), Invariant);
-            int rem;
-            var separatorCount = DivRem(str.Length - 1, groupSize, out rem);
-            char[] chars;
-            var c = 1;
-            var s = 1;
-            if (0 < rem)
-            {
-                chars = new char[str.Length + separatorCount + Int64Suffix.Length];
-                Copy(str, ref s, chars, ref c, rem);
+                var str = value.ToString(GetDecimalFormat(minDigits), Invariant);
+                int rem;
+                var separatorCount = DivRem(str.Length - 1, groupSize, out rem);
+                char[] chars;
+                var c = 1;
+                var s = 1;
+                if (0 < rem)
+                {
+                    chars = new char[str.Length + separatorCount + Int64Suffix.Length];
+                    Copy(str, ref s, chars, ref c, rem);
+                }
+                else
+                {
+                    separatorCount -= 1;
+                    chars = new char[str.Length + separatorCount + Int64Suffix.Length];
+                    Copy(str, ref s, chars, ref c, groupSize);
+                }
+                chars[0] = '-';
+                while (s < str.Length)
+                {
+                    chars[c++] = '_';
+                    Copy(str, ref s, chars, ref c, groupSize);
+                }
+                Array.Copy(Int64Suffix, 0, chars, c, Int64Suffix.Length);
+                return new string(chars);
             }
             else
             {
-                separatorCount -= 1;
-                chars = new char[str.Length + separatorCount + Int64Suffix.Length];
-              Copy(str, ref s, chars, ref c, groupSize);
-            }
-            chars[0] = '-';
-            while (s < str.Length)
-            {
-                chars[c++] = '_';
-                Copy(str, ref s, chars, ref c, groupSize);
-            }
-            Array.Copy(Int64Suffix, 0, chars, c, Int64Suffix.Length);
-            return new string(chars);
-            }
-            else
-            {
-            var str = value.ToString(GetDecimalFormat(minDigits), Invariant);
-            int rem;
-            var separatorCount = DivRem(str.Length, groupSize, out rem);
-            char[] chars;
-            var c = 0;
-            var s = 0;
+                var str = value.ToString(GetDecimalFormat(minDigits), Invariant);
+                int rem;
+                var separatorCount = DivRem(str.Length, groupSize, out rem);
+                char[] chars;
+                var c = 0;
+                var s = 0;
 
-            if (0 < rem)
-            {
-                chars = new char[str.Length + separatorCount + Int64Suffix.Length];
-                Copy(str, ref s, chars, ref c, rem);
-            }
-            else
-            {
-                separatorCount -= 1;
-                chars = new char[str.Length + separatorCount + Int64Suffix.Length];
-                Copy(str, ref s, chars, ref c, groupSize);
-            }
+                if (0 < rem)
+                {
+                    chars = new char[str.Length + separatorCount + Int64Suffix.Length];
+                    Copy(str, ref s, chars, ref c, rem);
+                }
+                else
+                {
+                    separatorCount -= 1;
+                    chars = new char[str.Length + separatorCount + Int64Suffix.Length];
+                    Copy(str, ref s, chars, ref c, groupSize);
+                }
 
-            while (s < str.Length)
-            {
-                chars[c++] = '_';
-                Copy(str, ref s, chars, ref c, groupSize);
-            }
+                while (s < str.Length)
+                {
+                    chars[c++] = '_';
+                    Copy(str, ref s, chars, ref c, groupSize);
+                }
 
-            Array.Copy(Int64Suffix, 0, chars, c, Int64Suffix.Length);
-            return new string(chars);
+                Array.Copy(Int64Suffix, 0, chars, c, Int64Suffix.Length);
+                return new string(chars);
             }
         }
 
@@ -621,7 +621,7 @@ namespace Fsi.TextTemplating
                     chars[c++] = '_';
                     Copy(str, ref s, chars, ref c, groupSize);
                 }
-                    Array.Copy(Int64Suffix, 0, chars, c, Int64Suffix.Length);
+                Array.Copy(Int64Suffix, 0, chars, c, Int64Suffix.Length);
                 return new string(chars);
             }
         }
@@ -646,36 +646,36 @@ namespace Fsi.TextTemplating
 
             if (groupSize == 0)
             {
-                return value.ToString(GetDecimalFormat(minDigits), Invariant);;
+                return value.ToString(GetDecimalFormat(minDigits), Invariant); ;
             }
             else
             {
-            var str = value.ToString(GetDecimalFormat(minDigits), Invariant);
-            int rem;
-            var separatorCount = DivRem(str.Length, groupSize, out rem);
-            char[] chars;
-            var c = 0;
-            var s = 0;
+                var str = value.ToString(GetDecimalFormat(minDigits), Invariant);
+                int rem;
+                var separatorCount = DivRem(str.Length, groupSize, out rem);
+                char[] chars;
+                var c = 0;
+                var s = 0;
 
-            if (0 < rem)
-            {
-                chars = new char[str.Length + separatorCount];
-                Copy(str, ref s, chars, ref c, rem);
-            }
-            else
-            {
-                separatorCount -= 1;
-                chars = new char[str.Length + separatorCount];
-                Copy(str, ref s, chars, ref c, groupSize);
-            }
+                if (0 < rem)
+                {
+                    chars = new char[str.Length + separatorCount];
+                    Copy(str, ref s, chars, ref c, rem);
+                }
+                else
+                {
+                    separatorCount -= 1;
+                    chars = new char[str.Length + separatorCount];
+                    Copy(str, ref s, chars, ref c, groupSize);
+                }
 
-            while (s < str.Length)
-            {
-                chars[c++] = '_';
-                Copy(str, ref s, chars, ref c, groupSize);
-            }
+                while (s < str.Length)
+                {
+                    chars[c++] = '_';
+                    Copy(str, ref s, chars, ref c, groupSize);
+                }
 
-            return new string(chars);
+                return new string(chars);
             }
         }
 
@@ -688,15 +688,19 @@ namespace Fsi.TextTemplating
         public string HexaDecimal(byte value, int groupSize, int minDigits)
         {
             if (groupSize < 0) throw Error.ArgumentLessThanValue(nameof(groupSize), 0);
+
             if (minDigits < 0) throw Error.ArgumentLessThanValue(nameof(minDigits), 0);
+
 
             if (minDigits < DefaultByteHexMaxLength)
             {
                 if (DefaultByteHexMaxLength <= groupSize) throw Error.ArgumentEqualsValueOrMore(nameof(groupSize), DefaultByteHexMaxLength);
+
             }
             else
             {
                 if (minDigits <= groupSize) throw Error.ArgumentEqualsOtherOrMore(nameof(groupSize), nameof(minDigits));
+
             }
 
             if (groupSize == 0)
@@ -762,36 +766,36 @@ namespace Fsi.TextTemplating
 
             if (groupSize == 0)
             {
-                return value.ToString(GetDecimalFormat(minDigits), Invariant);;
+                return value.ToString(GetDecimalFormat(minDigits), Invariant); ;
             }
             else
             {
-            var str = value.ToString(GetDecimalFormat(minDigits), Invariant);
-            int rem;
-            var separatorCount = DivRem(str.Length, groupSize, out rem);
-            char[] chars;
-            var c = 0;
-            var s = 0;
+                var str = value.ToString(GetDecimalFormat(minDigits), Invariant);
+                int rem;
+                var separatorCount = DivRem(str.Length, groupSize, out rem);
+                char[] chars;
+                var c = 0;
+                var s = 0;
 
-            if (0 < rem)
-            {
-                chars = new char[str.Length + separatorCount];
-                Copy(str, ref s, chars, ref c, rem);
-            }
-            else
-            {
-                separatorCount -= 1;
-                chars = new char[str.Length + separatorCount];
-                Copy(str, ref s, chars, ref c, groupSize);
-            }
+                if (0 < rem)
+                {
+                    chars = new char[str.Length + separatorCount];
+                    Copy(str, ref s, chars, ref c, rem);
+                }
+                else
+                {
+                    separatorCount -= 1;
+                    chars = new char[str.Length + separatorCount];
+                    Copy(str, ref s, chars, ref c, groupSize);
+                }
 
-            while (s < str.Length)
-            {
-                chars[c++] = '_';
-                Copy(str, ref s, chars, ref c, groupSize);
-            }
+                while (s < str.Length)
+                {
+                    chars[c++] = '_';
+                    Copy(str, ref s, chars, ref c, groupSize);
+                }
 
-            return new string(chars);
+                return new string(chars);
             }
         }
 
@@ -804,6 +808,7 @@ namespace Fsi.TextTemplating
         public string HexaDecimal(ushort value, int groupSize, int minDigits)
         {
             if (groupSize < 0) throw Error.ArgumentLessThanValue(nameof(groupSize), 0);
+
             if (minDigits < 0) throw Error.ArgumentLessThanValue(nameof(minDigits), 0);
 
             if (minDigits < DefaultUInt16HexMaxLength)
@@ -886,33 +891,33 @@ namespace Fsi.TextTemplating
             }
             else
             {
-            var str = value.ToString(GetDecimalFormat(minDigits), Invariant);
-            int rem;
-            var separatorCount = DivRem(str.Length, groupSize, out rem);
-            char[] chars;
-            var c = 0;
-            var s = 0;
+                var str = value.ToString(GetDecimalFormat(minDigits), Invariant);
+                int rem;
+                var separatorCount = DivRem(str.Length, groupSize, out rem);
+                char[] chars;
+                var c = 0;
+                var s = 0;
 
-            if (0 < rem)
-            {
-                chars = new char[str.Length + separatorCount + UInt32Suffix.Length];
-                Copy(str, ref s, chars, ref c, rem);
-            }
-            else
-            {
-                separatorCount -= 1;
-                chars = new char[str.Length + separatorCount + UInt32Suffix.Length];
-                Copy(str, ref s, chars, ref c, groupSize);
-            }
+                if (0 < rem)
+                {
+                    chars = new char[str.Length + separatorCount + UInt32Suffix.Length];
+                    Copy(str, ref s, chars, ref c, rem);
+                }
+                else
+                {
+                    separatorCount -= 1;
+                    chars = new char[str.Length + separatorCount + UInt32Suffix.Length];
+                    Copy(str, ref s, chars, ref c, groupSize);
+                }
 
-            while (s < str.Length)
-            {
-                chars[c++] = '_';
-                Copy(str, ref s, chars, ref c, groupSize);
-            }
+                while (s < str.Length)
+                {
+                    chars[c++] = '_';
+                    Copy(str, ref s, chars, ref c, groupSize);
+                }
 
-            Array.Copy(UInt32Suffix, 0, chars, c, UInt32Suffix.Length);
-            return new string(chars);
+                Array.Copy(UInt32Suffix, 0, chars, c, UInt32Suffix.Length);
+                return new string(chars);
             }
         }
 
@@ -976,7 +981,7 @@ namespace Fsi.TextTemplating
                     chars[c++] = '_';
                     Copy(str, ref s, chars, ref c, groupSize);
                 }
-                    Array.Copy(UInt32Suffix, 0, chars, c, UInt32Suffix.Length);
+                Array.Copy(UInt32Suffix, 0, chars, c, UInt32Suffix.Length);
                 return new string(chars);
             }
         }
@@ -1009,33 +1014,33 @@ namespace Fsi.TextTemplating
             }
             else
             {
-            var str = value.ToString(GetDecimalFormat(minDigits), Invariant);
-            int rem;
-            var separatorCount = DivRem(str.Length, groupSize, out rem);
-            char[] chars;
-            var c = 0;
-            var s = 0;
+                var str = value.ToString(GetDecimalFormat(minDigits), Invariant);
+                int rem;
+                var separatorCount = DivRem(str.Length, groupSize, out rem);
+                char[] chars;
+                var c = 0;
+                var s = 0;
 
-            if (0 < rem)
-            {
-                chars = new char[str.Length + separatorCount + UInt64Suffix.Length];
-                Copy(str, ref s, chars, ref c, rem);
-            }
-            else
-            {
-                separatorCount -= 1;
-                chars = new char[str.Length + separatorCount + UInt64Suffix.Length];
-                Copy(str, ref s, chars, ref c, groupSize);
-            }
+                if (0 < rem)
+                {
+                    chars = new char[str.Length + separatorCount + UInt64Suffix.Length];
+                    Copy(str, ref s, chars, ref c, rem);
+                }
+                else
+                {
+                    separatorCount -= 1;
+                    chars = new char[str.Length + separatorCount + UInt64Suffix.Length];
+                    Copy(str, ref s, chars, ref c, groupSize);
+                }
 
-            while (s < str.Length)
-            {
-                chars[c++] = '_';
-                Copy(str, ref s, chars, ref c, groupSize);
-            }
+                while (s < str.Length)
+                {
+                    chars[c++] = '_';
+                    Copy(str, ref s, chars, ref c, groupSize);
+                }
 
-            Array.Copy(UInt64Suffix, 0, chars, c, UInt64Suffix.Length);
-            return new string(chars);
+                Array.Copy(UInt64Suffix, 0, chars, c, UInt64Suffix.Length);
+                return new string(chars);
             }
         }
 
@@ -1099,7 +1104,7 @@ namespace Fsi.TextTemplating
                     chars[c++] = '_';
                     Copy(str, ref s, chars, ref c, groupSize);
                 }
-                    Array.Copy(UInt64Suffix, 0, chars, c, UInt64Suffix.Length);
+                Array.Copy(UInt64Suffix, 0, chars, c, UInt64Suffix.Length);
                 return new string(chars);
             }
         }

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 
 namespace Fsi.TextTemplating.TypeNames
 {
+    [System.Diagnostics.DebuggerDisplay("{NamespaceName.FullName}")]
     internal sealed class NamespaceDeclarationFormatterContext
         : IFormatterContext
     {
@@ -27,9 +28,6 @@ namespace Fsi.TextTemplating.TypeNames
         {
             ImportedNamespaceNames.Add(namespaceName);
         }
-
-        public override string ToString()
-            => NamespaceName.FullName;
 
     }
 }

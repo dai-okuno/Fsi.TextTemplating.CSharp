@@ -5,7 +5,7 @@ using Xunit;
 namespace Fsi.TextTemplating.CSharp.Tests
 {
     public class TypeNameTestNullable
-        : TypeNameTest
+        : TypeNameTestBase
     {
         [Theory]
         [InlineData("System.Nullable<System.DateTime>", typeof(DateTime?))]

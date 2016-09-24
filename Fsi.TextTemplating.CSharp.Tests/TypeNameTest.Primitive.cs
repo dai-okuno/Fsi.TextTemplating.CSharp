@@ -7,7 +7,7 @@ using Xunit;
 namespace Fsi.TextTemplating.CSharp.Tests
 {
     public class TypeNameTestPrimitive
-        : TypeNameTest
+        : TypeNameTestBase
     {
         [Theory]
         [InlineData("System.Boolean", typeof(bool))]

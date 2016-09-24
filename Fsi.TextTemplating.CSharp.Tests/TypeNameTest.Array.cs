@@ -5,7 +5,7 @@ using Xunit;
 namespace Fsi.TextTemplating.CSharp.Tests
 {
     public class TypeNameTestArray
-        : TypeNameTest
+        : TypeNameTestBase
     {
 
         [Theory]

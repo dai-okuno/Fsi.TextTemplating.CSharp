@@ -5,7 +5,7 @@ using Xunit;
 namespace Fsi.TextTemplating.CSharp.Tests
 {
     public class TypeNameTestPointer
-        : TypeNameTest
+        : TypeNameTestBase
     {
         [Theory]
         [InlineData("System.DateTime*", typeof(DateTime))]

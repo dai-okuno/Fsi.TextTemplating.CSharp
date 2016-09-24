@@ -7,8 +7,9 @@ using System.Threading.Tasks;
 
 namespace Fsi.TextTemplating.TypeNames
 {
+    [System.Diagnostics.DebuggerDisplay("{TypeFullName}")]
     internal abstract class TypeName
-        : ITypeNameContainer, IEquatable<TypeName>
+        : ITypeNameContainer
     {
         public static TypeName[] EmptyArray { get; } = new TypeName[0];
 
@@ -44,19 +45,6 @@ namespace Fsi.TextTemplating.TypeNames
         /// <param name="context"></param>
         public abstract void AppendTypeOfNameTo(StringBuilder typeName, IFormatterContext context);
 
-        /// <summary></summary>
-        /// <param name="obj"></param>
-        /// <returns></returns>
-        public override bool Equals(object obj)
-            => Equals(obj as TypeName);
-
-        /// <summary></summary>
-        /// <param name="other"></param>
-        /// <returns></returns>
-        public bool Equals(TypeName other)
-            => ReferenceEquals(other, this)
-            || (!ReferenceEquals(other, null)
-                && TypeFullName == other.TypeFullName);
         /// <summary>
         /// Gets the name for type alias declaration.
         /// </summary>
@@ -79,7 +67,7 @@ namespace Fsi.TextTemplating.TypeNames
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public override int GetHashCode()
+        public sealed override int GetHashCode()
             => TypeFullName.GetHashCode();
         /// <summary>
         /// Gets the name of this object.
@@ -93,12 +81,5 @@ namespace Fsi.TextTemplating.TypeNames
         /// <param name="context"></param>
         /// <returns></returns>
         public abstract string GetTypeOfName(IFormatterContext context);
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        public override string ToString()
-            => TypeFullName;
-
     }
 }
