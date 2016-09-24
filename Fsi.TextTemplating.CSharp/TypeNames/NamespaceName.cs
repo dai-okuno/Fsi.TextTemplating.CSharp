@@ -6,31 +6,26 @@ using System.Threading.Tasks;
 
 namespace Fsi.TextTemplating.TypeNames
 {
+    [System.Diagnostics.DebuggerDisplay("{FullName}")]
     internal class NamespaceName
         : INamespaceName
     {
         public NamespaceName(INamespaceName parent, string fullName)
         {
-            Depth = parent.Depth + 1;
             FullName = fullName;
             Parent = parent;
             if (parent.IsGlobal)
             {
-                Name = fullName;
                 Root = this;
             }
             else
             {
-                Name = fullName.Substring(parent.FullName.Length + 1);
                 Root = parent.Root;
             }
         }
 
         private int _ImportedCount;
-
-        public int Depth { get; }
-        //public FlyweightFactory Factory
-        //    => Parent.Factory;
+        
         public string FullName { get; }
         public bool IsDeclared { get; set; }
         public bool IsGlobal
@@ -40,12 +35,7 @@ namespace Fsi.TextTemplating.TypeNames
         {
             get { return 0 < _ImportedCount; }
         }
-
-        public bool IsRoot
-            => Depth == 1;
-
-        public string Name { get; }
-
+        
         public INamespaceName Root { get; }
 
         public INamespaceName Parent { get; }
@@ -141,25 +131,9 @@ namespace Fsi.TextTemplating.TypeNames
             _ImportedCount--;
         }
 
-        public override bool Equals(object obj)
-            => Equals(obj as INamespaceName);
-
-        public bool Equals(INamespaceName other)
-            => ReferenceEquals(other, this)
-            || (!ReferenceEquals(other, null)
-                && FullName == other.FullName);
-
         public override int GetHashCode()
             => FullName.GetHashCode();
 
-        public override string ToString()
-            => FullName;
-        //private void AppendContainerName(INamespaceName namespaceName, StringBuilder typeName)
-        //{
-        //    if (namespaceName.IsDeclared || namespaceName.IsGlobal) return;
-        //    AppendContainerName(namespaceName.Parent, typeName);
-        //    typeName.Append(Name).Append('.');
-        //}
 
     }
 }

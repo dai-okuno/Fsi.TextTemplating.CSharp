@@ -4,8 +4,6 @@ using Xunit;
 
 namespace Fsi.TextTemplating.CSharp.Tests
 {
-    using DT = DateTime;
-
     public class TypeNameTestArray
         : TypeNameTest
     {
@@ -19,10 +17,6 @@ namespace Fsi.TextTemplating.CSharp.Tests
         [InlineData("int[][,][,,]", typeof(int[][,][,,]))]
         public void Ranks(string expected, Type type)
         {
-            if (expected == nameof(DT))
-            {
-
-            }
             base.NameOf(expected, type);
         }
         [Theory]

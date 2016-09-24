@@ -9,18 +9,6 @@ namespace Fsi.TextTemplating.TypeNames
     internal class NonParameterizedTypeName
         : CachedTypeName
     {
-        public NonParameterizedTypeName(INamespaceName namespaceName, string name)
-        {
-            Parent = namespaceName;
-            Name = name;
-            TypeFullName = GetFullName();
-        }
-        public NonParameterizedTypeName(TypeName declaringTypeName, string name)
-        {
-            Parent = declaringTypeName;
-            Name = name;
-            TypeFullName = GetFullName();
-        }
         public NonParameterizedTypeName(FlyweightFactory factory, Type type)
         {
             Parent = factory.GetNamespaceName(type.Namespace);

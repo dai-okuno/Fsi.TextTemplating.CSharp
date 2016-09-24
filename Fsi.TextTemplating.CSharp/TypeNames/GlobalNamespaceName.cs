@@ -6,16 +6,10 @@ using System.Threading.Tasks;
 
 namespace Fsi.TextTemplating.TypeNames
 {
+    [System.Diagnostics.DebuggerDisplay("{FullName}")]
     internal class GlobalNamespaceName
         : INamespaceName
     {
-        public GlobalNamespaceName(FlyweightFactory factory)
-        {
-            Factory = factory;
-        }
-        public int Depth
-            => 0;
-        public FlyweightFactory Factory { get; }
         public string FullName
             => string.Empty;
         bool INamespaceName.IsDeclared
@@ -28,12 +22,6 @@ namespace Fsi.TextTemplating.TypeNames
 
         bool INamespaceName.IsImported
             => false;
-
-        bool INamespaceName.IsRoot
-            => false;
-
-        public string Name
-            => "global";
 
         INamespaceName INamespaceName.Parent
             => null;
@@ -61,9 +49,6 @@ namespace Fsi.TextTemplating.TypeNames
         {
             throw new NotSupportedException();
         }
-
-        public bool Equals(INamespaceName other)
-            => ReferenceEquals(other, this);
 
         public override int GetHashCode()
             => FullName.GetHashCode();

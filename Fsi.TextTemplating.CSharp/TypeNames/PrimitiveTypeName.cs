@@ -15,28 +15,39 @@ namespace Fsi.TextTemplating.TypeNames
             PrimitiveName = primitiveName;
             TypeFullName = type.FullName;
         }
-        private static readonly PrimitiveTypeName[] _Values =
-            new PrimitiveTypeName[]
-            {
-                new PrimitiveTypeName(typeof(char), "char"),
-                new PrimitiveTypeName(typeof(sbyte), "sbyte"),
-                new PrimitiveTypeName(typeof(short), "short"),
-                new PrimitiveTypeName(typeof(int), "int"),
-                new PrimitiveTypeName(typeof(long), "long"),
-                new PrimitiveTypeName(typeof(byte), "byte"),
-                new PrimitiveTypeName(typeof(ushort), "ushort"),
-                new PrimitiveTypeName(typeof(uint), "uint"),
-                new PrimitiveTypeName(typeof(ulong), "ulong"),
-                new PrimitiveTypeName(typeof(float), "float"),
-                new PrimitiveTypeName(typeof(double), "double"),
-                new PrimitiveTypeName(typeof(decimal), "decimal"),
-                new PrimitiveTypeName(typeof(bool), "bool"),
-                new PrimitiveTypeName(typeof(string), "string"),
-                new PrimitiveTypeName(typeof(object), "object"),
-                new PrimitiveTypeName(typeof(void), "void"),
-            };
-        public static IReadOnlyList<PrimitiveTypeName> GetValues(FlyweightFactory factory)
-            => _Values;
+        public static PrimitiveTypeName @bool()
+            => new PrimitiveTypeName(typeof(bool), nameof(@bool));
+        public static PrimitiveTypeName @byte()
+            => new PrimitiveTypeName(typeof(byte), nameof(@byte));
+        public static PrimitiveTypeName @char()
+            => new PrimitiveTypeName(typeof(char), nameof(@char));
+        public static PrimitiveTypeName @decimal()
+            => new PrimitiveTypeName(typeof(decimal), nameof(@decimal));
+        public static PrimitiveTypeName @double()
+            => new PrimitiveTypeName(typeof(double), nameof(@double));
+        public static PrimitiveTypeName @float()
+            => new PrimitiveTypeName(typeof(float), nameof(@float));
+        public static PrimitiveTypeName @int()
+            => new PrimitiveTypeName(typeof(int), nameof(@int));
+        public static PrimitiveTypeName @long()
+            => new PrimitiveTypeName(typeof(long), nameof(@long));
+        public static PrimitiveTypeName @object()
+            => new PrimitiveTypeName(typeof(object), nameof(@object));
+        public static PrimitiveTypeName @sbyte()
+            => new PrimitiveTypeName(typeof(sbyte), nameof(@sbyte));
+        public static PrimitiveTypeName @short()
+            => new PrimitiveTypeName(typeof(short), nameof(@short));
+        public static PrimitiveTypeName @string()
+            => new PrimitiveTypeName(typeof(string), nameof(@string));
+        public static PrimitiveTypeName @uint()
+            => new PrimitiveTypeName(typeof(uint), nameof(@uint));
+        public static PrimitiveTypeName @ulong()
+            => new PrimitiveTypeName(typeof(ulong), nameof(@ulong));
+        public static PrimitiveTypeName @ushort()
+            => new PrimitiveTypeName(typeof(ushort), nameof(@ushort));
+        public static PrimitiveTypeName @void()
+            => new PrimitiveTypeName(typeof(void), nameof(@void));
+
         public string PrimitiveName { get; }
 
         public Type Type { get; }

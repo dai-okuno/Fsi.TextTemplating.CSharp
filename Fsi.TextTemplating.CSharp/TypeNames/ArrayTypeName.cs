@@ -6,12 +6,7 @@ namespace Fsi.TextTemplating.TypeNames
     internal class ArrayTypeName
         : CachedTypeName
     {
-        public ArrayTypeName(TypeName elementTypeName, string ranks)
-        {
-            ElementTypeName = elementTypeName;
-            Ranks = ranks;
-            TypeFullName = GetFullName();
-        }
+
         public ArrayTypeName(FlyweightFactory factory, Type type)
         {
             var t = type;
@@ -39,8 +34,7 @@ namespace Fsi.TextTemplating.TypeNames
             Ranks = ranks;
             TypeFullName = type.FullName;
         }
-        //public override FlyweightFactory Factory
-        //    => ElementTypeName.Factory;
+
         private TypeName ElementTypeName { get; }
         private string Ranks { get; }
         /// <summary>

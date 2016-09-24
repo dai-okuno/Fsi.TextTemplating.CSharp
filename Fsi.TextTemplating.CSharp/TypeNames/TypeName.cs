@@ -56,7 +56,7 @@ namespace Fsi.TextTemplating.TypeNames
         public bool Equals(TypeName other)
             => ReferenceEquals(other, this)
             || (!ReferenceEquals(other, null)
-                && GetFullName() == other.GetFullName());
+                && TypeFullName == other.TypeFullName);
         /// <summary>
         /// Gets the name for type alias declaration.
         /// </summary>

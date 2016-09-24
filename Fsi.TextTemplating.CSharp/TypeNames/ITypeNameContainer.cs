@@ -8,7 +8,6 @@ namespace Fsi.TextTemplating.TypeNames
 {
     interface ITypeNameContainer
     {
-        // FlyweightFactory Factory { get; }
         /// <summary>
         /// Append the name for the type alias declaration.
         /// </summary>

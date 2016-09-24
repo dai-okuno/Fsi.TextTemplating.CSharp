@@ -47,14 +47,5 @@ namespace Fsi.TextTemplating
             return result;
         }
 
-        public static TResult[] SelectRange<TSource, TResult>(this TSource[] source, int start, int count, Func<TSource, TResult> selector)
-        {
-            var result = new TResult[count];
-            for (int i = 0; i < result.Length; i++)
-            {
-                result[i] = selector(source[start + i]);
-            }
-            return result;
-        }
     }
 }

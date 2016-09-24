@@ -10,21 +10,6 @@ namespace Fsi.TextTemplating.TypeNames
     internal class ParameterizedTypeName
             : CachedTypeName
     {
-        public ParameterizedTypeName(INamespaceName namespaceName, string name, TypeName[] argNames)
-        {
-            Parent = namespaceName;
-            CoreName = name;
-            GenericTypeArgumentNames = argNames;
-            TypeFullName = GetFullName();
-        }
-
-        public ParameterizedTypeName(TypeName declaringTypeName, string name, TypeName[] argNames)
-        {
-            Parent = declaringTypeName;
-            CoreName = name;
-            GenericTypeArgumentNames = argNames;
-            TypeFullName = GetFullName();
-        }
         public ParameterizedTypeName(FlyweightFactory factory, Type type)
         {
             Parent = factory.GetNamespaceName(type.Namespace);
@@ -200,13 +185,6 @@ namespace Fsi.TextTemplating.TypeNames
 
         private string GetCoreName(string typeName)
             => typeName.Remove(typeName.IndexOf('`'));
-
-        private string GetCoreNameNested(string typeName)
-        {
-            var start = typeName.LastIndexOf('+');
-            var end = typeName.IndexOf('`', start);
-            return typeName.Substring(start, end - start);
-        }
 
     }
 }

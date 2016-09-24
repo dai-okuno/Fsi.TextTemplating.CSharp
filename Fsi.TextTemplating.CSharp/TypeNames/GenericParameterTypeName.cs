@@ -6,11 +6,6 @@ namespace Fsi.TextTemplating.TypeNames
     internal sealed class GenericParameterTypeName
         : TypeName
     {
-        public GenericParameterTypeName(string name)
-        {
-            Name = name;
-            TypeFullName = name;
-        }
         public GenericParameterTypeName(Type type)
         {
             Name = type.Name;

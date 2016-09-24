@@ -10,14 +10,26 @@ namespace Fsi.TextTemplating.TypeNames
     {
         public FlyweightFactory()
         {
-            GlobalNamespaceName = new GlobalNamespaceName(this);
+            GlobalNamespaceName = new GlobalNamespaceName();
             _NamespaceNames = new NamespaceNameCollection[NamespaceNamesSize];
             _NamespaceNamesMask = _NamespaceNames.Length - 1;
             _TypeNames = new TypeNameCollection[TypeNamesSize];
-            foreach (var primitive in PrimitiveTypeName.GetValues(this))
-            {
-                Add(primitive);
-            }
+            Add(PrimitiveTypeName.@char());
+            Add(PrimitiveTypeName.@sbyte());
+            Add(PrimitiveTypeName.@short());
+            Add(PrimitiveTypeName.@int());
+            Add(PrimitiveTypeName.@long());
+            Add(PrimitiveTypeName.@byte());
+            Add(PrimitiveTypeName.@ushort());
+            Add(PrimitiveTypeName.@uint());
+            Add(PrimitiveTypeName.@ulong());
+            Add(PrimitiveTypeName.@float());
+            Add(PrimitiveTypeName.@double());
+            Add(PrimitiveTypeName.@decimal());
+            Add(PrimitiveTypeName.@bool());
+            Add(PrimitiveTypeName.@string());
+            Add(PrimitiveTypeName.@object());
+            Add(PrimitiveTypeName.@void());
         }
 
         private const int TypeNamesSize = 256;

@@ -13,7 +13,7 @@ namespace Fsi.TextTemplating.TypeNames
             var node = First;
             while (node != null)
             {
-                var comp = NameComparer.Compare(node.Item.FullName, key);
+                var comp = NameComparer.Compare(GetName(node.Item), key);
                 if (comp < 0)
                 {
                     node = node.Next;

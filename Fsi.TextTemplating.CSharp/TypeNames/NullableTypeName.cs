@@ -9,12 +9,6 @@ namespace Fsi.TextTemplating.TypeNames
     internal class NullableTypeName
         : CachedTypeName
     {
-        public NullableTypeName(INamespaceName system, TypeName underlyingTypeName)
-        {
-            UnderlyingTypeName = underlyingTypeName;
-            _System = system;
-            TypeFullName = GetFullName();
-        }
         public NullableTypeName(FlyweightFactory factory, Type type)
         {
             UnderlyingTypeName = factory.GetTypeName(Nullable.GetUnderlyingType(type));

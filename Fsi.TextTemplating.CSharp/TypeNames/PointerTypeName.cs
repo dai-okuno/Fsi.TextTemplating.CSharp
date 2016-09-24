@@ -9,18 +9,11 @@ namespace Fsi.TextTemplating.TypeNames
     internal class PointerTypeName
         : CachedTypeName
     {
-        public PointerTypeName(TypeName elementTypeName)
-        {
-            ElementTypeName = elementTypeName;
-            TypeFullName = GetFullName();
-        }
         public PointerTypeName(FlyweightFactory factory, Type type)
         {
             ElementTypeName = factory.GetTypeName(type.GetElementType());
             TypeFullName = type.FullName;
         }
-        //public override FlyweightFactory Factory
-        //    => ElementTypeName.Factory;
         private TypeName ElementTypeName { get; }
 
         /// <summary>
