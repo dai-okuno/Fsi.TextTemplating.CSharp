@@ -13,20 +13,22 @@ namespace Fsi.TextTemplating.CSharp.Tests
         [InlineData("System.Threading.Tasks.ParallelLoopResult*", typeof(System.Threading.Tasks.ParallelLoopResult))]
         [InlineData("System.Collections.Generic.List<System.Int32>.Enumerator*", typeof(System.Collections.Generic.List<int>.Enumerator))]
         [InlineData("System.Func<System.Int32>*", typeof(Func<int>))]
-        public override void AppendAliasNameTo(string expected, Type type)
+        public void AliasName(string expected, Type type)
         {
-            base.AppendAliasNameTo(expected, type.MakePointerType());
+            AppendAliasNameTo(expected, type.MakePointerType());
+            AliasNameOf(expected, type.MakePointerType());
         }
 
         [Theory]
-        [InlineData("System.DateTime*", typeof(DateTime))]
-        [InlineData("System.Threading.CancellationToken*", typeof(CancellationToken))]
+        [InlineData("DateTime*", typeof(DateTime))]
+        [InlineData("CancellationToken*", typeof(CancellationToken))]
         [InlineData("System.Threading.Tasks.ParallelLoopResult*", typeof(System.Threading.Tasks.ParallelLoopResult))]
-        [InlineData("System.Collections.Generic.List<System.Int32>.Enumerator*", typeof(System.Collections.Generic.List<int>.Enumerator))]
-        [InlineData("System.Func<System.Int32>*", typeof(Func<int>))]
-        public override void AliasNameOf(string expected, Type type)
+        [InlineData("System.Collections.Generic.List{int}.Enumerator*", typeof(System.Collections.Generic.List<int>.Enumerator))]
+        [InlineData("Func{int}*", typeof(Func<int>))]
+        public void CRefName(string expected, Type type)
         {
-            base.AliasNameOf(expected, type.MakePointerType());
+            AppendCRefNameTo(expected, type.MakePointerType());
+            CRefNameOf(expected, type.MakePointerType());
         }
 
         [Theory]
@@ -35,20 +37,10 @@ namespace Fsi.TextTemplating.CSharp.Tests
         [InlineData("System.Threading.Tasks.ParallelLoopResult*", typeof(System.Threading.Tasks.ParallelLoopResult))]
         [InlineData("System.Collections.Generic.List<int>.Enumerator*", typeof(System.Collections.Generic.List<int>.Enumerator))]
         [InlineData("System.Func<int>*", typeof(Func<int>))]
-        public override void AppendFullNameTo(string expected, Type type)
+        public void FullName(string expected, Type type)
         {
-            base.AppendFullNameTo(expected, type.MakePointerType());
-        }
-
-        [Theory]
-        [InlineData("System.DateTime*", typeof(DateTime))]
-        [InlineData("System.Threading.CancellationToken*", typeof(CancellationToken))]
-        [InlineData("System.Threading.Tasks.ParallelLoopResult*", typeof(System.Threading.Tasks.ParallelLoopResult))]
-        [InlineData("System.Collections.Generic.List<int>.Enumerator*", typeof(System.Collections.Generic.List<int>.Enumerator))]
-        [InlineData("System.Func<int>*", typeof(Func<int>))]
-        public override void FullNameOf(string expected, Type type)
-        {
-            base.FullNameOf(expected, type.MakePointerType());
+            AppendFullNameTo(expected, type.MakePointerType());
+            FullNameOf(expected, type.MakePointerType());
         }
 
         [Theory]
@@ -57,9 +49,10 @@ namespace Fsi.TextTemplating.CSharp.Tests
         [InlineData("System.Threading.Tasks.ParallelLoopResult*", typeof(System.Threading.Tasks.ParallelLoopResult))]
         [InlineData("System.Collections.Generic.List<int>.Enumerator*", typeof(System.Collections.Generic.List<int>.Enumerator))]
         [InlineData("Func<int>*", typeof(Func<int>))]
-        public override void AppendNameTo(string expected, Type type)
+        public void Name(string expected, Type type)
         {
-            base.AppendNameTo(expected, type.MakePointerType());
+            AppendNameTo(expected, type.MakePointerType());
+            NameOf(expected, type.MakePointerType());
         }
 
         [Theory]
@@ -68,9 +61,11 @@ namespace Fsi.TextTemplating.CSharp.Tests
         [InlineData("System.Threading.Tasks.ParallelLoopResult*", typeof(System.Threading.Tasks.ParallelLoopResult))]
         [InlineData("System.Collections.Generic.List<int>.Enumerator*", typeof(System.Collections.Generic.List<int>.Enumerator))]
         [InlineData("Func<int>*", typeof(Func<int>))]
-        public override void NameOf(string expected, Type type)
+        public void TypeOfName(string expected, Type type)
         {
-            base.NameOf(expected, type.MakePointerType());
+            AppendTypeOfNameTo(expected, type.MakePointerType());
+            TypeOfNameOf(expected, type.MakePointerType());
         }
+
     }
 }

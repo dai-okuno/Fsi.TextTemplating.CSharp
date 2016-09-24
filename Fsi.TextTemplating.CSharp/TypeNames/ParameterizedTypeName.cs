@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Fsi.TextTemplating.TypeNames
@@ -16,6 +17,8 @@ namespace Fsi.TextTemplating.TypeNames
             CoreName = GetCoreName(type.Name);
 
             GenericTypeArgumentNames = factory.GetTypeNames(type.GenericTypeArguments);
+
+            IsConstructed = true;
 
             TypeFullName = type.FullName;
         }
@@ -44,6 +47,8 @@ namespace Fsi.TextTemplating.TypeNames
                 GenericTypeArgumentNames = factory.GetTypeNames(type.GenericTypeArguments);
             }
 
+            IsConstructed = true;
+
             TypeFullName = type.FullName;
         }
         public ParameterizedTypeName(FlyweightFactory factory, TypeName parentTypeName, TypeInfo typeInfo)
@@ -63,10 +68,12 @@ namespace Fsi.TextTemplating.TypeNames
 
             TypeFullName = typeInfo.FullName;
         }
-        private ITypeNameContainer Parent { get; }
 
+        private static string[] _TypeOfNameTypeArgumentsNames = new[] { "", "<>", "<,>", "<,,>" };
+        private ITypeNameContainer Parent { get; }
         private string CoreName { get; }
         private TypeName[] GenericTypeArgumentNames { get; }
+        private bool IsConstructed { get; }
         /// <summary>
         /// Append the name for the type alias declaration.
         /// </summary>
@@ -172,19 +179,45 @@ namespace Fsi.TextTemplating.TypeNames
                 typeName.Append('.');
             }
             typeName.Append(CoreName);
-            typeName.Append('{');
-            var args = GenericTypeArgumentNames;
-            args[0].AppendTypeOfNameTo(typeName, context);
-            for (int i = 1; i < args.Length; i++)
+            if (IsConstructed)
             {
-                typeName.Append(", ");
-                args[i].AppendTypeOfNameTo(typeName, context);
+                typeName.Append('<');
+                var args = GenericTypeArgumentNames;
+                args[0].AppendTypeOfNameTo(typeName, context);
+                for (int i = 1; i < args.Length; i++)
+                {
+                    typeName.Append(", ");
+                    args[i].AppendTypeOfNameTo(typeName, context);
+                }
+                typeName.Append('>');
             }
-            typeName.Append('}');
+            else
+            {
+                typeName.Append(GetTypeOfNameTypeArgumentsNames(GenericTypeArgumentNames.Length));
+            }
         }
 
         private string GetCoreName(string typeName)
             => typeName.Remove(typeName.IndexOf('`'));
 
+        private string GetTypeOfNameTypeArgumentsNames(int argCount)
+        {
+            var names = Volatile.Read(ref _TypeOfNameTypeArgumentsNames);
+            if (argCount < names.Length)
+            {
+                return names[argCount];
+            }
+            var array = new string[argCount + 1];
+            Array.Copy(names, array, names.Length);
+            var buffer = new StringBuilder(argCount + 1).Append(names[names.Length - 1]);
+            for (int i = names.Length; i < array.Length; i++)
+            {
+                buffer[i - 1] = ',';
+                buffer.Append('>');
+                array[i] = buffer.ToString();
+            }
+            Interlocked.CompareExchange(ref _TypeOfNameTypeArgumentsNames, array, names);
+            return array[argCount];
+        }
     }
 }

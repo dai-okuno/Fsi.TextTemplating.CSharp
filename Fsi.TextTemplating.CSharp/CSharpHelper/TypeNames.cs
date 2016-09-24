@@ -57,6 +57,13 @@ namespace Fsi.TextTemplating
 
             Factory.GetTypeName(type).AppendNameTo(typeName, Context);
         }
+        public void AppendTypeOfNameTo(Type type, StringBuilder typeName)
+        {
+            if (type == null) throw new ArgumentNullException(nameof(type));
+            if (typeName == null) throw new ArgumentNullException(nameof(typeName));
+
+            Factory.GetTypeName(type).AppendTypeOfNameTo(typeName, Context);
+        }
         /// <summary>
         /// Begin namespace declaration with specified name.
         /// </summary>

@@ -6,7 +6,8 @@ namespace Fsi.TextTemplating.CSharp.Tests
 {
     public class TypeNameTest
     {
-        public virtual void AppendAliasNameTo(string expected, Type type)
+        
+        protected void AppendAliasNameTo(string expected, Type type)
         {
             var csharp = new CSharpHelper();
             csharp.Import("System");
@@ -18,7 +19,7 @@ namespace Fsi.TextTemplating.CSharp.Tests
             csharp.AppendAliasNameTo(type, typeName);
             Assert.Equal(expected, typeName.ToString());
         }
-        public virtual void AppendCRefNameTo(string expected, Type type)
+        protected void AppendCRefNameTo(string expected, Type type)
         {
             var csharp = new CSharpHelper();
             csharp.Import("System");
@@ -30,7 +31,7 @@ namespace Fsi.TextTemplating.CSharp.Tests
             csharp.AppendCRefNameTo(type, typeName);
             Assert.Equal(expected, typeName.ToString());
         }
-        public virtual void AppendFullNameTo(string expected, Type type)
+        protected void AppendFullNameTo(string expected, Type type)
         {
             var csharp = new CSharpHelper();
             csharp.Import("System");
@@ -42,7 +43,7 @@ namespace Fsi.TextTemplating.CSharp.Tests
             csharp.AppendFullNameTo(type, typeName);
             Assert.Equal(expected, typeName.ToString());
         }
-        public virtual void AppendNameTo(string expected, Type type)
+        protected void AppendNameTo(string expected, Type type)
         {
             var csharp = new CSharpHelper();
             csharp.Import("System");
@@ -54,38 +55,58 @@ namespace Fsi.TextTemplating.CSharp.Tests
             csharp.AppendNameTo(type, typeName);
             Assert.Equal(expected, typeName.ToString());
         }
+        protected void AppendTypeOfNameTo(string expected,Type type)
+        {
+            var csharp = new CSharpHelper();
+            csharp.Import("System");
+            csharp.Import("System.Threading");
+            var typeName = new StringBuilder(type.Name.Length);
+            csharp.AppendTypeOfNameTo(type, typeName);
+            Assert.Equal(expected, typeName.ToString());
+            typeName.Clear();
+            csharp.AppendTypeOfNameTo(type, typeName);
+            Assert.Equal(expected, typeName.ToString());
+        }
+        protected void AliasNameOf(string expected,Type type)
+        {
+            var csharp = new CSharpHelper();
+            csharp.Import("System");
+            csharp.Import("System.Threading");
+            Assert.Equal(expected, csharp.AliasNameOf(type));
+            Assert.Equal(expected, csharp.AliasNameOf(type));
+        }
+        protected void CRefNameOf(string expected, Type type)
+        {
+            var csharp = new CSharpHelper();
+            csharp.Import("System");
+            csharp.Import("System.Threading");
+            Assert.Equal(expected, csharp.CRefNameOf(type));
+            Assert.Equal(expected, csharp.CRefNameOf(type));
+        }
+        protected void FullNameOf(string expected, Type type)
+        {
+            var csharp = new CSharpHelper();
+            csharp.Import("System");
+            csharp.Import("System.Threading");
+            Assert.Equal(expected, csharp.FullNameOf(type));
+            Assert.Equal(expected, csharp.FullNameOf(type));
+        }
+        protected void NameOf(string expected, Type type)
+        {
+            var csharp = new CSharpHelper();
+            csharp.Import("System");
+            csharp.Import("System.Threading");
+            Assert.Equal(expected, csharp.NameOf(type));
+            Assert.Equal(expected, csharp.NameOf(type));
+        }
 
-        public virtual void AliasNameOf(string expected,Type type)
+        protected void TypeOfNameOf(string expected, Type type)
         {
             var csharp = new CSharpHelper();
             csharp.Import("System");
             csharp.Import("System.Threading");
-            Assert.Equal(expected, csharp.AliasNameOf(type));
-            Assert.Equal(expected, csharp.AliasNameOf(type));
-        }
-        public virtual void CRefNameOf(string expected, Type type)
-        {
-            var csharp = new CSharpHelper();
-            csharp.Import("System");
-            csharp.Import("System.Threading");
-            Assert.Equal(expected, csharp.CRefNameOf(type));
-            Assert.Equal(expected, csharp.CRefNameOf(type));
-        }
-        public virtual void FullNameOf(string expected, Type type)
-        {
-            var csharp = new CSharpHelper();
-            csharp.Import("System");
-            csharp.Import("System.Threading");
-            Assert.Equal(expected, csharp.FullNameOf(type));
-            Assert.Equal(expected, csharp.FullNameOf(type));
-        }
-        public virtual void NameOf(string expected, Type type)
-        {
-            var csharp = new CSharpHelper();
-            csharp.Import("System");
-            csharp.Import("System.Threading");
-            Assert.Equal(expected, csharp.NameOf(type));
-            Assert.Equal(expected, csharp.NameOf(type));
+            Assert.Equal(expected, csharp.TypeOfNameOf(type));
+            Assert.Equal(expected, csharp.TypeOfNameOf(type));
         }
     }
 
